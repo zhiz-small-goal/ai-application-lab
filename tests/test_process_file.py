@@ -13,9 +13,9 @@ def test_process_supported_file(tmp_path: Path):
 
     result = process_file(test_file)
 
-    assert result["status"] == "success"
-    assert result["filename"] == "hello.txt"
-    assert result["extension"] == ".txt"
+    assert result.status == "success"
+    assert result.filename == "hello.txt"
+    assert result.extension == ".txt"
 
 
 def test_process_unsupported_file(tmp_path: Path):
@@ -28,8 +28,8 @@ def test_process_unsupported_file(tmp_path: Path):
 
     result = process_file(test_file)
 
-    assert result["status"] == "skipped"
-    assert result["reason"] == "不支持的文件类型"
+    assert result.status == "skipped"
+    assert result.reason == "不支持的文件类型"
 
 
 def test_process_directory(tmp_path: Path):
@@ -39,8 +39,8 @@ def test_process_directory(tmp_path: Path):
 
     result = process_file(test_dir)
 
-    assert result["status"] == "skipped"
-    assert result["reason"] == "不是文件"
+    assert result.status == "skipped"
+    assert result.reason == "不是文件"
 
 
 def test_process_missing_file(tmp_path: Path):
@@ -48,5 +48,5 @@ def test_process_missing_file(tmp_path: Path):
 
     result = process_file(missing_file)
 
-    assert result["status"] == "skipped"
-    assert result["reason"] == "不是文件"
+    assert result.status == "skipped"
+    assert result.reason == "不是文件"

@@ -51,14 +51,14 @@ def process_file(
             "跳过非文件路径: %s",
             file_path.name,
         )
-        return {
-            "filename": file_path.name,
-            "extension": "",
-            "size_bytes": 0,
-            "modified_time": "",
-            "status": "skipped",
-            "reason": "不是文件"
-        }
+        return FileRecord(
+            filename=file_path.name,
+            extension="",
+            size_bytes=0,
+            modified_time="",
+            status="skipped",
+            reason="不是文件"
+        )
 
     extension = file_path.suffix.lower()
 
@@ -67,28 +67,28 @@ def process_file(
             "跳过不支持的文件类型: %s",
             file_path.name,
         )
-        return {
-            "filename": file_path.name,
-            "extension": extension,
-            "size_bytes": 0,
-            "modified_time": "",
-            "status": "skipped",
-            "reason": "不支持的文件类型",
-        }
+        return FileRecord(
+            filename=file_path.name,
+            extension=extension,
+            size_bytes=0,
+            modified_time="",
+            status="skipped",
+            reason="不支持的文件类型",
+        )
 
     try:
         file_info = file_path.stat()
 
-        return {
-            "filename": file_path.name,
-            "extension": extension,
-            "size_bytes": file_info.st_size,
-            "modified_time": format_modified_time(
+        return FileRecord(
+            filename=file_path.name,
+            extension=extension,
+            size_bytes=file_info.st_size,
+            modified_time=format_modified_time(
                 file_info.st_mtime
             ),
-            "status": "success",
-            "reason": "",
-        }
+            status="success",
+            reason="",
+        )
     
 
     except Exception as error:
@@ -98,14 +98,14 @@ def process_file(
             error,
         )
 
-        return {
-            "filename": file_path.name,
-            "extension": extension,
-            "size_bytes": 0,
-            "modified_time": "",
-            "status": "failed",
-            "reason": str(error)
-        }
+        return FileRecord(
+            filename=file_path.name,
+            extension=extension,
+            size_bytes=0,
+            modified_time="",
+            status="failed",
+            reason=str(error),
+        )
 
 
 def summarize_records(
@@ -117,11 +117,11 @@ def summarize_records(
     skip: int = 0
 
     for summarize in records:
-        if summarize["status"] == "success":
+        if summarize.status == "success":
             success += 1
-        elif summarize["status"] == "failed":
+        elif summarize.status == "failed":
             failed += 1
-        elif summarize["status"] == "skipped":
+        elif summarize.status == "skipped":
             skip += 1
 
     result = {
@@ -166,7 +166,10 @@ def save_manifest(
         )
 
         writer.writeheader()
-        writer.writerows(records)
+        writer.writerows(
+            record.model_dump()
+            for record in records
+        )
 
 
 def main() -> None:
