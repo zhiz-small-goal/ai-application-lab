@@ -1,7 +1,7 @@
-from typing import TypedDict
+from pydantic import BaseModel
 
 
-class FileRecord(TypedDict):
+class FileRecord(BaseModel):
     filename: str
     extension: str
     size_bytes: int
