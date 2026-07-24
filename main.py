@@ -42,7 +42,7 @@ def scan_files(input_dir: Path) -> list[FileRecord]:
 
 
 def process_file(
-        file_path:Path,
+        file_path: Path,
 ) -> FileRecord:
     """处理单个文件, 返回文件记录"""
 
@@ -109,7 +109,7 @@ def process_file(
 
 
 def summarize_records(
-        records:list[FileRecord]
+        records: list[FileRecord]
 ) -> dict[str, int]:
 
     success: int = 0
@@ -125,12 +125,17 @@ def summarize_records(
             skip += 1
 
     result = {
-        "处理成功数量:": success,
-        "处理失败数量:": failed,
-        "跳过处理数量": skip
+        "success": success,
+        "failed": failed,
+        "skipped": skip
     }
 
-    logging.info("成功处理 %s 个, 处理失败 %s 个, 跳过 %s 个", success, failed, skip)
+    logging.info(
+        "成功处理 %s 个, 处理失败 %s 个, 跳过 %s 个", 
+        result["success"], 
+        result["failed"], 
+        result["skipped"]
+    )
 
     return result
 
@@ -189,3 +194,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    
