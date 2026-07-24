@@ -19,6 +19,7 @@ logging.basicConfig(
     format="%(levelname)s | %(message)s",
 )
 
+
 def format_modified_time(timestamp: float) -> str:
     """把文件时间戳转换为可读时间"""
     modified_time = datetime.fromtimestamp(timestamp)
@@ -28,20 +29,18 @@ def format_modified_time(timestamp: float) -> str:
 def scan_files(input_dir: Path) -> list[dict[str, str | int]]:
     """扫描输入目录并收集文件信息"""
 
-    records:list[dict[str, str | int]] = []
+    records: list[dict[str, str | int]] = []
 
     for file_path in sorted(input_dir.iterdir()):
         record = process_file(file_path)
-
-        if record is not None:
-            records.append(record)
+        records.append(record)
 
     return records
 
 
 def process_file(
         file_path:Path,
-) -> dict[str, str | int] | None:
+) -> dict[str, str | int]:
     """处理单个文件, 返回文件记录"""
 
     if not file_path.is_file():
@@ -49,16 +48,30 @@ def process_file(
             "跳过非文件路径: %s",
             file_path.name,
         )
-        return None
+        return {
+            "filename": file_path.name,
+            "extension": "",
+            "size_bytes": 0,
+            "modified_time": "",
+            "status": "skipped",
+            "reason": "不是文件"
+        }
 
     extension = file_path.suffix.lower()
 
     if extension not in SUPPORTED_EXTENSIONS:
         logging.warning(
             "跳过不支持的文件类型: %s",
-            file_path,
+            file_path.name,
         )
-        return None
+        return {
+            "filename": file_path.name,
+            "extension": extension,
+            "size_bytes": 0,
+            "modified_time": "",
+            "status": "skipped",
+            "reason": "不支持的文件类型",
+        }
 
     try:
         file_info = file_path.stat()
@@ -71,6 +84,7 @@ def process_file(
                 file_info.st_mtime
             ),
             "status": "success",
+            "reason": "",
         }
     
 
@@ -87,7 +101,35 @@ def process_file(
             "size_bytes": 0,
             "modified_time": "",
             "status": "failed",
+            "reason": str(error)
         }
+
+
+def summarize_records(
+        records:list[dict[str, str | int]]
+) -> dict[str, int]:
+
+    success: int = 0
+    failed: int = 0
+    skip: int = 0
+
+    for summarize in records:
+        if summarize["status"] == "success":
+            success += 1
+        elif summarize["status"] == "failed":
+            failed += 1
+        elif summarize["status"] == "skipped":
+            skip += 1
+
+    result = {
+        "处理成功数量:": success,
+        "处理失败数量:": failed,
+        "跳过处理数量": skip
+    }
+
+    logging.info("成功处理 %s 个, 处理失败 %s 个, 跳过 %s 个", success, failed, skip)
+
+    return result
 
 
 def save_manifest(
@@ -102,6 +144,7 @@ def save_manifest(
         "size_bytes",
         "modified_time",
         "status",
+        "reason",
     ]
 
     with MANIFEST_FILE.open(
@@ -129,6 +172,7 @@ def main() -> None:
 
     records = scan_files(INPUT_DIR)
     save_manifest(records)
+    summarize_records(records)
 
     logging.info(
         "处理完成，共生成 %s 条记录",
