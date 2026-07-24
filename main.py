@@ -3,6 +3,9 @@ from datetime import datetime
 import csv
 import logging
 
+from models import FileRecord
+
+
 INPUT_DIR = Path("input")
 OUTPUT_DIR = Path("output")
 MANIFEST_FILE = OUTPUT_DIR / "manifest.csv"
@@ -26,10 +29,10 @@ def format_modified_time(timestamp: float) -> str:
     return modified_time.strftime("%Y-%m-%d %H:%M:%S")
 
 
-def scan_files(input_dir: Path) -> list[dict[str, str | int]]:
+def scan_files(input_dir: Path) -> list[FileRecord]:
     """扫描输入目录并收集文件信息"""
 
-    records: list[dict[str, str | int]] = []
+    records: list[FileRecord] = []
 
     for file_path in sorted(input_dir.iterdir()):
         record = process_file(file_path)
@@ -40,7 +43,7 @@ def scan_files(input_dir: Path) -> list[dict[str, str | int]]:
 
 def process_file(
         file_path:Path,
-) -> dict[str, str | int]:
+) -> FileRecord:
     """处理单个文件, 返回文件记录"""
 
     if not file_path.is_file():
@@ -106,7 +109,7 @@ def process_file(
 
 
 def summarize_records(
-        records:list[dict[str, str | int]]
+        records:list[FileRecord]
 ) -> dict[str, int]:
 
     success: int = 0
@@ -133,7 +136,7 @@ def summarize_records(
 
 
 def save_manifest(
-        records: list[dict[str, str | int]],
+        records: list[FileRecord],
 ) -> None:
     """把文件信息写入 CSV"""
     OUTPUT_DIR.mkdir(exist_ok=True)
