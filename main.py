@@ -1,9 +1,9 @@
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, UTC
 import csv
 import logging
 
-from models import FileRecord
+from models import FileRecord, FileProcessingStatus
 
 
 INPUT_DIR = Path("input")
@@ -23,10 +23,15 @@ logging.basicConfig(
 )
 
 
-def format_modified_time(timestamp: float) -> str:
-    """把文件时间戳转换为可读时间"""
-    modified_time = datetime.fromtimestamp(timestamp)
-    return modified_time.strftime("%Y-%m-%d %H:%M:%S")
+def timestamp_to_utc_datetime(
+        timestamp: float,
+) -> datetime:
+    """Convert a POSIX timestamp to a UTC datetime"""
+
+    return datetime.fromtimestamp(
+        timestamp,
+        tz=UTC
+    )
 
 
 def scan_files(input_dir: Path) -> list[FileRecord]:
@@ -55,8 +60,8 @@ def process_file(
             filename=file_path.name,
             extension="",
             size_bytes=0,
-            modified_time="",
-            status="skipped",
+            modified_time=None,
+            status=FileProcessingStatus.SKIPPED,
             reason="不是文件"
         )
 
@@ -71,8 +76,8 @@ def process_file(
             filename=file_path.name,
             extension=extension,
             size_bytes=0,
-            modified_time="",
-            status="skipped",
+            modified_time=None,
+            status=FileProcessingStatus.SKIPPED,
             reason="不支持的文件类型",
         )
 
@@ -83,10 +88,10 @@ def process_file(
             filename=file_path.name,
             extension=extension,
             size_bytes=file_info.st_size,
-            modified_time=format_modified_time(
+            modified_time=timestamp_to_utc_datetime(
                 file_info.st_mtime
             ),
-            status="success",
+            status=FileProcessingStatus.SUCCESS,
             reason="",
         )
     
@@ -102,8 +107,8 @@ def process_file(
             filename=file_path.name,
             extension=extension,
             size_bytes=0,
-            modified_time="",
-            status="failed",
+            modified_time=None,
+            status=FileProcessingStatus.FAILED,
             reason=str(error),
         )
 
@@ -114,20 +119,20 @@ def summarize_records(
 
     success: int = 0
     failed: int = 0
-    skip: int = 0
+    skipped: int = 0
 
-    for summarize in records:
-        if summarize.status == "success":
+    for record in records:
+        if record.status is FileProcessingStatus.SUCCESS:
             success += 1
-        elif summarize.status == "failed":
+        elif record.status is FileProcessingStatus.FAILED:
             failed += 1
-        elif summarize.status == "skipped":
+        elif record.status is FileProcessingStatus.SKIPPED:
             skip += 1
 
     result = {
         "success": success,
         "failed": failed,
-        "skipped": skip
+        "skipped": skipped,
     }
 
     logging.info(
@@ -167,7 +172,7 @@ def save_manifest(
 
         writer.writeheader()
         writer.writerows(
-            record.model_dump()
+            record.model_dump(mode="json")
             for record in records
         )
 
