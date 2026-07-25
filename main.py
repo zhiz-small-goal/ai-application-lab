@@ -49,39 +49,41 @@ def scan_files(input_dir: Path) -> list[FileRecord]:
 def process_file(
         file_path: Path,
 ) -> FileRecord:
-    """处理单个文件, 返回文件记录"""
-
-    if not file_path.is_file():
-        logging.warning(
-            "跳过非文件路径: %s",
-            file_path.name,
-        )
-        return FileRecord(
-            filename=file_path.name,
-            extension="",
-            size_bytes=0,
-            modified_time=None,
-            status=FileProcessingStatus.SKIPPED,
-            reason="不是文件"
-        )
-
-    extension = file_path.suffix.lower()
-
-    if extension not in SUPPORTED_EXTENSIONS:
-        logging.warning(
-            "跳过不支持的文件类型: %s",
-            file_path.name,
-        )
-        return FileRecord(
-            filename=file_path.name,
-            extension=extension,
-            size_bytes=0,
-            modified_time=None,
-            status=FileProcessingStatus.SKIPPED,
-            reason="不支持的文件类型",
-        )
+    """Process ont path and return its processing record"""
 
     try:
+        if not file_path.is_file():
+            logging.warning(
+                "跳过非文件路径: %s",
+                file_path.name,
+            )
+
+            return FileRecord(
+                filename=file_path.name,
+                extension="",
+                size_bytes=0,
+                modified_time=None,
+                status=FileProcessingStatus,
+                reason="不是文件"
+            )
+
+        extension = file_path.suffix.lower()
+
+        if extension not in SUPPORTED_EXTENSIONS:
+            logging.warning(
+                "跳过不支持的文件类型: %s",
+                file_path.name,
+            )
+
+            return FileRecord(
+                filename=file_path.name,
+                extension=extension,
+                size_bytes=0,
+                modified_time=None,
+                status=FileProcessingStatus.SKIPPED,
+                reason="不支持的文件类型",
+            )
+
         file_info = file_path.stat()
 
         return FileRecord(
@@ -91,12 +93,11 @@ def process_file(
             modified_time=timestamp_to_utc_datetime(
                 file_info.st_mtime
             ),
-            status=FileProcessingStatus.SUCCESS,
+            status=FileProcessingStatus,
             reason="",
         )
-    
 
-    except Exception as error:
+    except OSError as error:
         logging.error(
             "处理失败: %s: %s",
             file_path.name,
@@ -105,7 +106,7 @@ def process_file(
 
         return FileRecord(
             filename=file_path.name,
-            extension=extension,
+            extension=file_path.suffix.lower(),
             size_bytes=0,
             modified_time=None,
             status=FileProcessingStatus.FAILED,
