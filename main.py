@@ -128,7 +128,7 @@ def summarize_records(
         elif record.status is FileProcessingStatus.FAILED:
             failed += 1
         elif record.status is FileProcessingStatus.SKIPPED:
-            skip += 1
+            skipped += 1
 
     result = {
         "success": success,
