@@ -40,7 +40,7 @@ def parse_arguments() -> Namespace:
     )
 
     parser.add_argument(
-        "--output_dir",
+        "--output-dir",
         type=Path,
         default=DEFAULT_OUTPUT_DIR,
         help="Directory for generated files. Defalut: output",
