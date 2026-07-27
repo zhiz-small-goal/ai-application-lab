@@ -49,7 +49,7 @@ def scan_files(input_dir: Path) -> list[FileRecord]:
 def process_file(
         file_path: Path,
 ) -> FileRecord:
-    """Process ont path and return its processing record"""
+    """Process one path and return its processing record."""
 
     try:
         if not file_path.is_file():
@@ -63,7 +63,7 @@ def process_file(
                 extension="",
                 size_bytes=0,
                 modified_time=None,
-                status=FileProcessingStatus,
+                status=FileProcessingStatus.SKIPPED,
                 reason="不是文件"
             )
 
@@ -93,7 +93,7 @@ def process_file(
             modified_time=timestamp_to_utc_datetime(
                 file_info.st_mtime
             ),
-            status=FileProcessingStatus,
+            status=FileProcessingStatus.SUCCESS,
             reason="",
         )
 
