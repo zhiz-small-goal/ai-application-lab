@@ -5,10 +5,12 @@ import logging
 
 from models import FileRecord, FileProcessingStatus
 
+from argparse import ArgumentParser, Namespace
 
-INPUT_DIR = Path("input")
-OUTPUT_DIR = Path("output")
-MANIFEST_FILE = OUTPUT_DIR / "manifest.csv"
+
+DEFAULT_INPUT_DIR = Path("input")
+DEFAULT_OUTPUT_DIR = Path("output")
+MANIFEST_FILENAME = "manifest.csv"
 
 SUPPORTED_EXTENSIONS = {
     ".txt",
@@ -21,6 +23,30 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(levelname)s | %(message)s",
 )
+
+
+def parse_arguments() -> Namespace:
+    """Parse command-line arguments."""
+
+    parser = ArgumentParser(
+        description="Scan files and generate a CSV manifest."
+    )
+
+    parser.add_argument(
+        "--input-dir",
+        type=Path,
+        default=DEFAULT_INPUT_DIR,
+        help="Directory to scan. Default: input"
+    )
+
+    parser.add_argument(
+        "--output_dir",
+        type=Path,
+        default=DEFAULT_OUTPUT_DIR,
+        help="Directory for generated files. Defalut: output",
+    )
+
+    return parser.parse_args()
 
 
 def timestamp_to_utc_datetime(
@@ -137,7 +163,7 @@ def summarize_records(
     }
 
     logging.info(
-        "Processed successfully: %s 个, failed: %s 个, skipped %s 个", 
+        "Processed successfully: %s , failed: %s , skipped %s ", 
         result["success"], 
         result["failed"], 
         result["skipped"]
@@ -148,9 +174,13 @@ def summarize_records(
 
 def save_manifest(
         records: list[FileRecord],
+        manifest_file: Path
 ) -> None:
     """Write file records to a CSV manifest."""
-    OUTPUT_DIR.mkdir(exist_ok=True)
+    manifest_file.parent.mkdir(
+        parents=True,
+        exist_ok=True
+    )
 
     fieldnames = [
         "filename",
@@ -161,7 +191,7 @@ def save_manifest(
         "reason",
     ]
 
-    with MANIFEST_FILE.open(
+    with manifest_file.open(
         mode="w",
         newline="",
         encoding="utf-8-sig",
@@ -180,24 +210,34 @@ def save_manifest(
 
 def main() -> None:
     """Run the file processing workflow."""
-    if not INPUT_DIR.exists():
+    args = parse_arguments()
+
+    input_dir: Path = args.input_dir
+    output_dir: Path = args.output_dir
+    manifest_file = output_dir / MANIFEST_FILENAME
+
+    if not input_dir.is_dir():
         logging.error(
-            "Input directory does not exist: %s",
-            INPUT_DIR.resolve(),
+            "Input directory does not exist or is not a directory: %s",
+            input_dir.resolve(),
         )
         return
 
-    records = scan_files(INPUT_DIR)
-    save_manifest(records)
-    summarize_records(records)
+    records = scan_files(input_dir)
 
+    save_manifest(
+        records,
+        manifest_file,
+    )
+
+    summarize_records(records)
     logging.info(
-        "Processing complete. Generated %s records",
-        len(records),
+        "processing complete. Generated %s records",
+        len(records)
     )
     logging.info(
-        "Manifest file: %s",
-        MANIFEST_FILE.resolve(),
+        "Manifest file %s",
+        manifest_file.resolve()
     )
 
 
