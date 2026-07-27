@@ -232,7 +232,7 @@ def main() -> None:
 
     summarize_records(records)
     logging.info(
-        "processing complete. Generated %s records",
+        "Processing complete. Generated %s records",
         len(records)
     )
     logging.info(

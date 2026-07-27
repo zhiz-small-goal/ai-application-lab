@@ -82,7 +82,7 @@ def test_main_processes_input_and_writes_manifest(
         rows = list(csv.DictReader(csv_file))
 
     rows_by_filename = {
-        row["finelame"]: row
+        row["filename"]: row
         for row in rows
     }
 
