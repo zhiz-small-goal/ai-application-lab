@@ -55,12 +55,12 @@ def test_create_valid_non_success_record(
     record = make_record(
         modified_time=None,
         status=status,
-        reason="处理未成功",
+        reason="Processing was not successful",
     )
 
     assert record.status is status
     assert record.modified_time is None
-    assert record.reason == "处理未成功"
+    assert record.reason == "Processing was not successful"
 
 
 def test_reject_negative_size():
@@ -71,7 +71,7 @@ def test_reject_negative_size():
 def test_reject_success_without_modified_time():
     with pytest.raises(
         ValidationError,
-        match="成功记录必须包含修改时间",
+        match="Successful records must include a modified time",
     ):
         make_record(modified_time=None)
 
@@ -79,9 +79,9 @@ def test_reject_success_without_modified_time():
 def test_reject_success_with_reason():
     with pytest.raises(
         ValidationError,
-        match="成功记录的 reason 必须为空",
+        match="Successful records must have an empty reason",
     ):
-        make_record(reason="发生异常")
+        make_record(reason="Unexpected error")
 
 
 @pytest.mark.parametrize(
@@ -96,7 +96,7 @@ def test_reject_non_success_without_reason(
 ):
     with pytest.raises(
         ValidationError,
-        match="失败或跳过记录必须提供 reason",
+        match="Failed or skipped records must provide a reason",
     ):
         make_record(
             modified_time=None,

@@ -32,16 +32,16 @@ class FileRecord(BaseModel):
         if self.status is FileProcessingStatus.SUCCESS:
             if self.modified_time is None:
                 raise ValueError(
-                    "成功记录必须包含修改时间"
+                    "Successful records must include a modified time"
                 )
             if reason:
                 raise ValueError(
-                    "成功记录的 reason 必须为空"
+                    "Successful records must have an empty reason"
                 )
 
         elif not reason:
             raise ValueError(
-                "失败或跳过记录必须提供 reason"
+                "Failed or skipped records must provide a reason"
             )
 
         return  self

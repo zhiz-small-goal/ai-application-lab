@@ -35,7 +35,7 @@ def timestamp_to_utc_datetime(
 
 
 def scan_files(input_dir: Path) -> list[FileRecord]:
-    """扫描输入目录并收集文件信息"""
+    """Scan the input directory and collect file records"""
 
     records: list[FileRecord] = []
 
@@ -54,7 +54,7 @@ def process_file(
     try:
         if not file_path.is_file():
             logging.warning(
-                "跳过非文件路径: %s",
+                "SKipping non-file path: %s",
                 file_path.name,
             )
 
@@ -64,14 +64,14 @@ def process_file(
                 size_bytes=0,
                 modified_time=None,
                 status=FileProcessingStatus.SKIPPED,
-                reason="不是文件"
+                reason="Not a file"
             )
 
         extension = file_path.suffix.lower()
 
         if extension not in SUPPORTED_EXTENSIONS:
             logging.warning(
-                "跳过不支持的文件类型: %s",
+                "Skipping unsupported file type: %s",
                 file_path.name,
             )
 
@@ -81,7 +81,7 @@ def process_file(
                 size_bytes=0,
                 modified_time=None,
                 status=FileProcessingStatus.SKIPPED,
-                reason="不支持的文件类型",
+                reason="Unsupported file type",
             )
 
         file_info = file_path.stat()
@@ -99,7 +99,7 @@ def process_file(
 
     except OSError as error:
         logging.error(
-            "处理失败: %s: %s",
+            "Failed to process file: %s: %s",
             file_path.name,
             error,
         )
@@ -137,7 +137,7 @@ def summarize_records(
     }
 
     logging.info(
-        "成功处理 %s 个, 处理失败 %s 个, 跳过 %s 个", 
+        "Processed successfully: %s 个, failed: %s 个, skipped %s 个", 
         result["success"], 
         result["failed"], 
         result["skipped"]
@@ -149,7 +149,7 @@ def summarize_records(
 def save_manifest(
         records: list[FileRecord],
 ) -> None:
-    """把文件信息写入 CSV"""
+    """Write file records to a CSV manifest."""
     OUTPUT_DIR.mkdir(exist_ok=True)
 
     fieldnames = [
@@ -179,10 +179,10 @@ def save_manifest(
 
 
 def main() -> None:
-    """程序入口"""
+    """Run the file processing workflow."""
     if not INPUT_DIR.exists():
         logging.error(
-            "输入目录不存在：%s",
+            "Input directory does not exist: %s",
             INPUT_DIR.resolve(),
         )
         return
@@ -192,11 +192,11 @@ def main() -> None:
     summarize_records(records)
 
     logging.info(
-        "处理完成，共生成 %s 条记录",
+        "Processing complete. Generated %s records",
         len(records),
     )
     logging.info(
-        "结果文件： %s",
+        "Manifest file: %s",
         MANIFEST_FILE.resolve(),
     )
 
