@@ -2,7 +2,7 @@ import logging
 import sys
 import csv
 
-from main import main
+from main import main, run_file_processing
 
 
 def test_main_stops_when_input_directory_is_missing(
@@ -35,9 +35,8 @@ def test_main_stops_when_input_directory_is_missing(
     assert not output_dir.exists()
 
 
-def test_main_processes_input_and_writes_manifest(
+def test_run_processing_writes_manifest(
         tmp_path,
-        monkeypatch,
         caplog,
 ):
     input_dir = tmp_path / "input"
@@ -55,20 +54,14 @@ def test_main_processes_input_and_writes_manifest(
     )
     (input_dir / "subfolder").mkdir()
 
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        [
-            "main.py",
-            "--input-dir",
-            str(input_dir),
-            "--output-dir",
-            str(output_dir),
-        ],
-    )
-
     with caplog.at_level(logging.INFO):
-        main()
+        records = run_file_processing(
+            input_dir=input_dir,
+            output_dir=output_dir
+        )
+
+    assert records is not None
+    assert len(records) == 3
 
     manifest_file = output_dir / "manifest.csv"
 

@@ -210,36 +210,47 @@ def save_manifest(
         )
 
 
-def main() -> None:
-    """Run the file processing workflow."""
-    args = parse_arguments()
-
-    input_dir: Path = args.input_dir
-    output_dir: Path = args.output_dir
+def run_file_processing(
+        input_dir: Path,
+        output_dir: Path,
+) -> list[FileRecord] | None:
+    """Process files and generate a CSV manifest."""
     manifest_file = output_dir / MANIFEST_FILENAME
 
     if not input_dir.is_dir():
         logging.error(
-            "Input directory does not exist or is not a directory: %s",
-            input_dir.resolve(),
+            "Input directory does not exist or is not a directory: %s"
         )
-        return
+        return None
 
     records = scan_files(input_dir)
 
     save_manifest(
         records,
         manifest_file,
-    )
+        )
 
     summarize_records(records)
+
     logging.info(
         "Processing complete. Generated %s records",
-        len(records)
+        len(records),
     )
     logging.info(
         "Manifest file %s",
-        manifest_file.resolve()
+        manifest_file,
+    )
+
+    return records
+
+
+def main() -> None:
+    """Run the command-line interface"""
+    args = parse_arguments()
+
+    run_file_processing(
+        input_dir = args.input_dir,
+        output_dir = args.output_dir
     )
 
 
