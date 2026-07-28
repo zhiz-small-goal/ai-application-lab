@@ -25,7 +25,9 @@ logging.basicConfig(
 )
 
 
-def parse_arguments() -> Namespace:
+def parse_arguments(
+        argv: list[str] | None = None,
+) -> Namespace:
     """Parse command-line arguments."""
 
     parser = ArgumentParser(
@@ -46,7 +48,7 @@ def parse_arguments() -> Namespace:
         help="Directory for generated files. Defalut: output",
     )
 
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
 def timestamp_to_utc_datetime(
