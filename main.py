@@ -45,7 +45,7 @@ def parse_arguments(
         "--output-dir",
         type=Path,
         default=DEFAULT_OUTPUT_DIR,
-        help="Directory for generated files. Defalut: output",
+        help="Directory for generated files. Default: output",
     )
 
     return parser.parse_args(argv)
@@ -82,7 +82,7 @@ def process_file(
     try:
         if not file_path.is_file():
             logging.warning(
-                "SKipping non-file path: %s",
+                "Skipping non-file path: %s",
                 file_path.name,
             )
 

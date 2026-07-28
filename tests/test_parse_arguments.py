@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 
 from main import(
@@ -8,7 +7,7 @@ from main import(
 )
 
 
-def test_parse_arguments_uses_default_dirctories():
+def test_parse_arguments_uses_default_directories():
     args = parse_arguments([])
 
     assert args.input_dir == DEFAULT_INPUT_DIR
