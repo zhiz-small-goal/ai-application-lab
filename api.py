@@ -45,8 +45,8 @@ def process_files(
         raise HTTPException(
             status_code=400,
             detail=(
-                "Input directory does not exist"
-                "or is not directory"
+                "Input directory does not exist "
+                "or is not a directory"
             ),
         )
 
