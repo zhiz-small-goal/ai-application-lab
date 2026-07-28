@@ -38,7 +38,7 @@ def process_files(
 ) -> ProcessFileResponse:
     records = run_file_processing(
         input_dir=request.input_dir,
-        output_dir=request.input_dir,
+        output_dir=request.output_dir,
     )
 
     if records is None:
