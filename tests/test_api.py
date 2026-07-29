@@ -71,4 +71,51 @@ def test_process_files_returns_400_for_missing_input(
     }
 
     assert not output_dir.exists()
-    
+
+
+def test_process_uploaded_files_returns_records():
+    response = client.post(
+        "/process-upload",
+        files=[
+            (
+                "files",
+                (
+                    "hello.txt",
+                    b"hello python",
+                    "text/plain",
+                ),
+            ),
+            (
+                "files",
+                (
+                    "image.jpg",
+                    b"fack image data",
+                    "image/jpeg",
+                ),
+            ),
+        ],
+    )
+
+    assert response.status_code == 200
+
+    response_data = response.json()
+
+    assert response_data["total"] == 2
+
+    records_by_filename = {
+        record["filename"]: record
+        for record in response_data["records"]
+    }
+
+    assert (
+        records_by_filename["hello.txt"]["status"]
+        == "success"
+    )
+    assert (
+        records_by_filename["image.jpg"]["status"]
+        == "skipped"
+    )
+    assert (
+        records_by_filename["image.jpg"]["reason"]
+        == "Unsupported file type"
+    )
