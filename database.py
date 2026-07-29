@@ -1,6 +1,10 @@
 from contextlib import closing
+from datetime import UTC, datetime
 from pathlib import Path
 import sqlite3
+from uuid import uuid4
+
+from models import FileRecord
 
 
 DEFAULT_DATABASE_PATH = Path("data") / "app.db"
@@ -58,3 +62,66 @@ def initialize_database(
     with closing(open_database(db_path)) as connection:
         connection.executescript(SCHEMA_SQL)
         connection.commit()
+
+
+def save_processing_task(
+        records: list[FileRecord],
+        input_type: str,
+        db_path: Path = DEFAULT_DATABASE_PATH,
+) -> str:
+    """Save one processing task and its file records."""
+    initialize_database(db_path)
+
+    task_id = str(uuid4)
+    created_at = datetime.now(UTC).isoformat()
+
+    with closing(open_database(db_path)) as connection:
+        with connection:
+            connection.execute(
+                """
+                INSERT INTO processing_tasks (
+                    id,
+                    created_at,
+                    input_type
+                )
+                VALUES (?, ?, ?)
+                """,
+                (
+                    task_id,
+                    created_at,
+                    input_type,
+                ),
+            )
+
+            for record in records:
+                modified_time = (
+                    record.modified_time.isoformat()
+                    if record.modified_time is not None
+                    else None
+                )
+
+                connection.execute(
+                    """
+                    INSERT INTO file_records (
+                        task_id,
+                        filename,
+                        extension,
+                        size_bytes,
+                        modified_time,
+                        status,
+                        reason
+                        )
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        task_id,
+                        record.filename,
+                        record.extension,
+                        record.size_bytes,
+                        modified_time,
+                        record.status.value,
+                        record.reason,
+                    ),
+                )
+
+    return task_id
