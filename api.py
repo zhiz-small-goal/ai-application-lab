@@ -9,8 +9,7 @@ from fastapi import (
     HTTPException,
     UploadFile,
 )
-from pydantic import  BaseModel
-
+from pydantic import  BaseModel, WithJsonSchema
 from main import run_file_processing
 from models import FileRecord
 
@@ -25,7 +24,18 @@ class ProcessFileRequest(BaseModel):
     output_dir: Path
 
 
-class ProcessFileResponse(BaseModel):
+SwaggerUploadFile = Annotated[
+    UploadFile,
+    WithJsonSchema(
+        {
+            "type": "string",
+            "format": "binary",
+        }
+    )
+]
+
+
+class ProcessFilesResponse(BaseModel):
     total: int
     records: list[FileRecord]
 
@@ -39,11 +49,11 @@ def health_check() -> dict[str, str]:
 
 @app.post(
     "/process",
-    response_model=ProcessFileResponse,
+    response_model=ProcessFilesResponse,
 )
 def process_files(
     request: ProcessFileRequest,
-) -> ProcessFileResponse:
+) -> ProcessFilesResponse:
     records = run_file_processing(
         input_dir=request.input_dir,
         output_dir=request.output_dir,
@@ -58,7 +68,7 @@ def process_files(
             ),
         )
 
-    return ProcessFileResponse(
+    return ProcessFilesResponse(
         total=len(records),
         records=records,
     )
@@ -67,14 +77,14 @@ def process_files(
 
 @app.post(
     "/process-upload",
-    response_model=ProcessFileResponse,
+    response_model=ProcessFilesResponse,
 )
 def process_uploaded_file(
     files: Annotated[
-        list[UploadFile],
-        File(description="Files to precess"),
+        list[SwaggerUploadFile],
+        File(description="Files to process"),
     ],
-) -> ProcessFileResponse:
+) -> ProcessFilesResponse:
     with TemporaryDirectory() as temporary_directory:
         task_directory = Path(temporary_directory)
         input_dir = task_directory / "input"
@@ -98,7 +108,7 @@ def process_uploaded_file(
             if filename in saved_filenames:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Duplicate filiename: {filename}",
+                    detail=f"Duplicate filename: {filename}",
                 )
 
             saved_filenames.add(filename)
@@ -122,7 +132,7 @@ def process_uploaded_file(
                 detail="File processing did not start",
             )
 
-        return ProcessFileResponse(
+        return ProcessFilesResponse(
             total=len(records),
             records=records,
         )
