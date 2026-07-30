@@ -2,6 +2,12 @@ from fastapi.testclient import TestClient
 
 from api import app
 
+from contextlib  import closing
+
+import api
+
+from database import open_database
+
 
 client = TestClient(app)
 
@@ -73,7 +79,18 @@ def test_process_files_returns_400_for_missing_input(
     assert not output_dir.exists()
 
 
-def test_process_uploaded_files_returns_records():
+def test_process_uploaded_files_returns_records(
+        tmp_path,
+        monkeypatch,
+):
+    db_path = tmp_path / "test.db"
+
+    monkeypatch.setattr(
+        api,
+        "DATABASE_PATH",
+        db_path,
+    )
+
     response = client.post(
         "/process-upload",
         files=[
@@ -100,7 +117,32 @@ def test_process_uploaded_files_returns_records():
 
     response_data = response.json()
 
+    task_id = response_data["task_id"]
+
+    assert task_id
     assert response_data["total"] == 2
+
+    with closing(open_database(db_path)) as connection:
+        task_row = connection.execute(
+            """
+            SELECT input_type
+            FROM processing_tasks
+            WHERE id = ?
+            """,
+            (task_id,),
+        ).fetchone()
+
+        record_count = connection.execute(
+            """
+            SELECT COUNT(*)
+            FROM file_records
+            WHERE task_id = ?
+            """,
+            (task_id,)
+        ).fetchone()[0]
+
+    assert task_row == ("upload",)
+    assert record_count == 2
 
     records_by_filename = {
         record["filename"]: record

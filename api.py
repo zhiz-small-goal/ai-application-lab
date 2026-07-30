@@ -13,6 +13,14 @@ from pydantic import  BaseModel, WithJsonSchema
 from main import run_file_processing
 from models import FileRecord
 
+from database import (
+    DEFAULT_DATABASE_PATH,
+    save_processing_task,
+)
+
+
+DATABASE_PATH = DEFAULT_DATABASE_PATH
+
 
 app = FastAPI(
     title="File Processing API",
@@ -36,6 +44,12 @@ SwaggerUploadFile = Annotated[
 
 
 class ProcessFilesResponse(BaseModel):
+    total: int
+    records: list[FileRecord]
+
+
+class ProcessUploadResponse(BaseModel):
+    task_id: str
     total: int
     records: list[FileRecord]
 
@@ -77,14 +91,14 @@ def process_files(
 
 @app.post(
     "/process-upload",
-    response_model=ProcessFilesResponse,
+    response_model=ProcessUploadResponse,
 )
 def process_uploaded_file(
     files: Annotated[
         list[SwaggerUploadFile],
         File(description="Files to process"),
     ],
-) -> ProcessFilesResponse:
+) -> ProcessUploadResponse:
     with TemporaryDirectory() as temporary_directory:
         task_directory = Path(temporary_directory)
         input_dir = task_directory / "input"
@@ -132,7 +146,14 @@ def process_uploaded_file(
                 detail="File processing did not start",
             )
 
-        return ProcessFilesResponse(
+        task_id = save_processing_task(
+            records=records,
+            input_type="upload",
+            db_path=DATABASE_PATH,
+        )
+
+        return ProcessUploadResponse(
+            task_id=task_id,
             total=len(records),
             records=records,
         )
