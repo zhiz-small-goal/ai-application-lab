@@ -4,7 +4,7 @@ from pathlib import Path
 import sqlite3
 from uuid import uuid4
 
-from models import FileRecord
+from models import FileRecord, ProcessingTask
 
 
 DEFAULT_DATABASE_PATH = Path("data") / "app.db"
@@ -125,3 +125,10 @@ def save_processing_task(
                 )
 
     return task_id
+
+
+def get_processing_task(
+        task_id: str,
+        db_path: Path = DEFAULT_DATABASE_PATH,
+)-> ProcessingTask | None:
+    pass

@@ -45,3 +45,10 @@ class FileRecord(BaseModel):
             )
 
         return  self
+
+
+class ProcessingTask(BaseModel):
+    task_id: str
+    created_at: datetime
+    input_type: str
+    records: list[FileRecord]
