@@ -5,10 +5,12 @@ import pytest
 
 from datetime import datetime, UTC
 
+import database
 from database import (
     initialize_database,
     open_database,
-    save_processing_task
+    save_processing_task,
+    get_processing_task,
 )
 from models import FileProcessingStatus, FileRecord
 
@@ -146,3 +148,71 @@ def test_save_processing_task_saves_task_and_records(
             "Unsupported file type"
         ),
     ]
+
+
+def test_get_processing_task_returns_saved_task(
+        tmp_path,
+):
+    db_path = tmp_path / "test.db"
+
+    records = [
+        FileRecord(
+            filename="hello.txt",
+            extension=".txt",
+            size_bytes=20,
+            modified_time=datetime(
+                2026,
+                8,
+                4,
+                18,
+                20,
+                tzinfo=UTC
+            ),
+            status=FileProcessingStatus.SUCCESS,
+            reason="",
+        ),
+        FileRecord(
+            filename="image.jpg",
+            extension=".jpg",
+            size_bytes=0,
+            modified_time=None,
+            status=FileProcessingStatus.SKIPPED,
+            reason="Unsupported file type",
+        ),
+    ]
+
+    task_id = save_processing_task(
+        records=records, 
+        db_path=db_path,
+        input_type="upload"
+        )
+
+    result = get_processing_task(
+        task_id=task_id,
+        db_path=db_path,
+    )
+
+    assert result is not None
+    assert result.task_id == task_id
+    assert result.input_type == "upload"
+    assert len(result.records) == 2
+    assert result.records == records
+    assert isinstance(result.created_at, datetime)
+    assert result.created_at.tzinfo is not None
+
+
+def test_get_processing_task_returns_none_for_missing_task(
+        tmp_path,
+):
+    db_path = tmp_path / "test.db"
+
+    initialize_database(db_path)
+
+    result = get_processing_task(
+        task_id="missing-task",
+        db_path=db_path,
+    )
+
+    assert result is None
+
+    
