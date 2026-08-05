@@ -3,6 +3,8 @@ from shutil import copyfileobj
 from tempfile import TemporaryDirectory
 from typing import Annotated
 
+from contextlib import asynccontextmanager
+
 from fastapi import (
     FastAPI, 
     File,
@@ -17,14 +19,25 @@ from database import (
     DEFAULT_DATABASE_PATH,
     get_processing_task,
     save_processing_task,
+    initialize_database,
 )
 
 
 DATABASE_PATH = DEFAULT_DATABASE_PATH
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    initialize_database(
+        db_path=DATABASE_PATH,
+    )
+
+    yield
+
+
 app = FastAPI(
     title="File Processing API",
+    lifespan=lifespan,
 )
 
 

@@ -166,7 +166,7 @@ def test_process_uploaded_files_returns_records(
     )
 
 
-def test_get_processing_task_returns_save_task(
+def test_get_processing_task_returns_saved_task(
         tmp_path,
         monkeypatch,
 ):
@@ -231,16 +231,15 @@ def test_get_processing_task_returns_404_for_missing_task(
         db_path,
     )
 
-    initialize_database(
-        db_path=db_path
-    )
-
-    response = client.get(
-        "/tasks/missing-task"
-    )
+    with TestClient(app) as test_client:
+        response = test_client.get(
+            "/tasks/missing-task"
+        )
 
     assert response.status_code == 404
     assert response.json() == {
         "detail": "Processing task not found"
     }
+
+    assert db_path.is_file()
 
