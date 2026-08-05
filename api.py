@@ -11,10 +11,11 @@ from fastapi import (
 )
 from pydantic import  BaseModel, WithJsonSchema
 from main import run_file_processing
-from models import FileRecord
+from models import FileRecord, ProcessingTask
 
 from database import (
     DEFAULT_DATABASE_PATH,
+    get_processing_task,
     save_processing_task,
 )
 
@@ -160,5 +161,18 @@ def process_uploaded_file(
 
 
 @app.get("/task/{task_id}")
-def get_processing_task_by_task_id():
-    pass
+def get_processing_task_by_task_id(
+    task_id: str,
+) -> ProcessingTask:
+    task = get_processing_task(
+        task_id=task_id,
+        db_path = DATABASE_PATH,
+    )
+
+    if task is None:
+        raise HTTPException(
+            status_coed=404,
+            detail="Processing task not found",
+        )
+
+    return task
