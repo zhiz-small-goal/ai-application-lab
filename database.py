@@ -4,7 +4,7 @@ from pathlib import Path
 import sqlite3
 from uuid import uuid4
 
-from models import FileRecord, ProcessingTask
+from models import FileRecord, ProcessingTask, FileProcessingStatus
 
 
 DEFAULT_DATABASE_PATH = Path("data") / "app.db"
@@ -72,7 +72,7 @@ def save_processing_task(
     """Save one processing task and its file records."""
     initialize_database(db_path)
 
-    task_id = str(uuid4)
+    task_id = str(uuid4())
     created_at = datetime.now(UTC).isoformat()
 
     with closing(open_database(db_path)) as connection:
@@ -131,4 +131,66 @@ def get_processing_task(
         task_id: str,
         db_path: Path = DEFAULT_DATABASE_PATH,
 )-> ProcessingTask | None:
-    pass
+    """Get one processing task by its ID"""
+
+    with closing(open_database(db_path)) as connection:
+        task_row = connection.execute(
+            """
+            SELECT
+                id,
+                created_at,
+                input_type
+            FROM processing_tasks
+            WHERE id = ?
+            """,
+            (task_id,),
+        ).fetchone()
+
+    if task_row is None:
+        return None
+
+    stored_task_id, created_at_text, input_type = task_row
+
+    records = []
+        
+    with closing(open_database(db_path)) as connection:
+        task_row = connection.execute(
+                    """
+                    SELECT
+                        id,
+                        created_at,
+                        input_type
+                    FROM processing_tasks
+                    WHERE id = ?
+                    """,
+                    (task_id,),
+                ).fetchone()
+        for record in task_row["records"]:
+            filename = record["filename"]
+            extension = record["extension"]
+            size_bytes = record["size_bytes"]
+            modified_time = record["modified_time"]
+            status = record["status"]
+            reason = record["reason"]
+
+            record_list = (
+                str(filename),
+                str(extension),
+                int(size_bytes),
+                datetime.fromisoformat(modified_time) if modified_time is not None else None,
+                FileProcessingStatus(status),
+                str(reason)
+            )
+
+            records.append(record_list)
+
+
+    return ProcessingTask(
+        task_id=stored_task_id,
+        created_at=datetime.fromisoformat(
+            created_at_text
+        ),
+        input_type=input_type,
+        records=records,
+    )
+
