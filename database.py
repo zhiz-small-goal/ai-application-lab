@@ -146,44 +146,49 @@ def get_processing_task(
             (task_id,),
         ).fetchone()
 
-    if task_row is None:
-        return None
+        if task_row is None:
+            return None
+
+        record_rows = connection.execute(
+            """
+            SELECT
+                filename,
+                extension,
+                size_bytes,
+                modified_time,
+                status,
+                reason
+            FROM file_records
+            WHERE task_id = ?
+            ORDER BY id
+            """,
+            (task_id,),
+        ).fetchall()
 
     stored_task_id, created_at_text, input_type = task_row
 
-    records = []
-        
-    with closing(open_database(db_path)) as connection:
-        task_row = connection.execute(
-                    """
-                    SELECT
-                        id,
-                        created_at,
-                        input_type
-                    FROM processing_tasks
-                    WHERE id = ?
-                    """,
-                    (task_id,),
-                ).fetchone()
-        for record in task_row["records"]:
-            filename = record["filename"]
-            extension = record["extension"]
-            size_bytes = record["size_bytes"]
-            modified_time = record["modified_time"]
-            status = record["status"]
-            reason = record["reason"]
+    records: list[FileRecord] = []
 
-            record_list = (
-                str(filename),
-                str(extension),
-                int(size_bytes),
-                datetime.fromisoformat(modified_time) if modified_time is not None else None,
-                FileProcessingStatus(status),
-                str(reason)
-            )
+    for record_row in record_rows:
+        (
+            filename,
+            extension,
+            size_bytes,
+            modified_time,
+            status,
+            reason,
+        ) = record_row
 
-            records.append(record_list)
+        record = FileRecord(
+            filename=filename,
+            extension=extension,
+            size_bytes=size_bytes,
+            modified_time=modified_time,
+            status=status,
+            reason=reason,
+        )
 
+        records.append(record)
 
     return ProcessingTask(
         task_id=stored_task_id,
