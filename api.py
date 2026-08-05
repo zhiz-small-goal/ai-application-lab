@@ -157,3 +157,8 @@ def process_uploaded_file(
             total=len(records),
             records=records,
         )
+
+
+@app.get("/task/{task_id}")
+def get_processing_task_by_task_id():
+    pass

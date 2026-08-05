@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from fastapi.testclient import TestClient
 
 from api import app
@@ -6,7 +8,8 @@ from contextlib  import closing
 
 import api
 
-from database import open_database
+from database import get_processing_task, initialize_database, open_database, save_processing_task
+from models import FileProcessingStatus, FileRecord
 
 
 client = TestClient(app)
@@ -161,3 +164,83 @@ def test_process_uploaded_files_returns_records(
         records_by_filename["image.jpg"]["reason"]
         == "Unsupported file type"
     )
+
+
+def tet_get_processing_task_returns_save_task(
+        tmp_path,
+        monkeypatch,
+):
+    db_path = tmp_path / "test.db"
+
+    monkeypatch.setattr(
+        api,
+        "DATABASE_PATH",
+        db_path,
+    )
+
+    records = [
+        FileRecord(
+            filename="hello.txt",
+            extension=".txt",
+            size_bytes=20,
+            modified_time=datetime(
+                2026,
+                7,
+                20,
+                20,
+                10,
+                tzinfo=UTC,
+            ),
+            status=FileProcessingStatus.SUCCESS,
+            reason="",
+        ),
+    ]
+
+    task_id = save_processing_task(
+        records=records,
+        db_path=db_path,
+        input_type="upload",
+    )
+
+    response = client.get(
+        f"tasks/{task_id}"
+    )
+
+    assert response.status_code == 200
+
+    response_data = response.json()
+
+    assert response_data["task_id"] == task_id
+    assert response_data["input_type"] == "upload"
+    assert len(response_data["records"]) == 1
+    assert (
+        response_data["records"][0]["filename"] 
+        == "hello.txt"
+    )
+
+
+def test_get_processing_task_returns_404_for_missing_task(
+        tmp_path,
+        monkeypatch,
+):
+    db_path = tmp_path / "test.db"
+
+    monkeypatch.setattr(
+        api,
+        "DATABASE_PATH",
+        db_path,
+    )
+
+    initialize_database(
+        db_path=db_path
+    )
+
+    response = client.get(
+        "/tasks/missing-task"
+    )
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Processing task not found"
+    }
+
