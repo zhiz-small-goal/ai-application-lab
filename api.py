@@ -160,7 +160,7 @@ def process_uploaded_file(
         )
 
 
-@app.get("/task/{task_id}")
+@app.get("/tasks/{task_id}")
 def get_processing_task_by_task_id(
     task_id: str,
 ) -> ProcessingTask:
@@ -171,7 +171,7 @@ def get_processing_task_by_task_id(
 
     if task is None:
         raise HTTPException(
-            status_coed=404,
+            status_code=404,
             detail="Processing task not found",
         )
 

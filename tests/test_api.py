@@ -166,7 +166,7 @@ def test_process_uploaded_files_returns_records(
     )
 
 
-def tet_get_processing_task_returns_save_task(
+def test_get_processing_task_returns_save_task(
         tmp_path,
         monkeypatch,
 ):
@@ -203,7 +203,7 @@ def tet_get_processing_task_returns_save_task(
     )
 
     response = client.get(
-        f"tasks/{task_id}"
+        f"/tasks/{task_id}"
     )
 
     assert response.status_code == 200
