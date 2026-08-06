@@ -52,3 +52,7 @@ class ProcessingTask(BaseModel):
     created_at: datetime
     input_type: str
     records: list[FileRecord]
+
+
+class TextAnalysisResult(BaseModel):
+    summary: str
