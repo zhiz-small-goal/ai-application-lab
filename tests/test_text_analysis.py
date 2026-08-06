@@ -1,5 +1,5 @@
 from models import TextAnalysisResult
-from text_analysis import summarize_text
+from text_analysis import summarize_text, summarize_text_file
 
 
 def test_text_analysis_result_accepts_summary():
