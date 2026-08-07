@@ -1,3 +1,7 @@
+import os
+
+
+
 def summarize_with_openai(
         text: str,
         client,
@@ -6,7 +10,7 @@ def summarize_with_openai(
     """Summarize text with OpenAI client."""
 
     response = client.responses.create(
-        input_text=text,
+        input=text,
         model=model,
     )
 
