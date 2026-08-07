@@ -7,10 +7,11 @@ def summarize_with_openai(
         client,
         model: str,
 ) -> str:
-    """Summarize text with OpenAI client."""
+    """Summarize text with OpenAI-compatible client."""
 
     response = client.responses.create(
         input=text,
+        instructions="Summarize the input text in one concise sentence.",
         model=model,
     )
 

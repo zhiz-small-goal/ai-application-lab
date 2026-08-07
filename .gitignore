@@ -5,6 +5,7 @@ __pycache__/
 output/
 *output/
 data/
+input/
 
 # Secrets
 .env
@@ -32,3 +33,5 @@ __pycache__/
 
 # Generated AI snapshots
 repomix-output.*
+input/note.txt
+deepseek_smoke_test.py
