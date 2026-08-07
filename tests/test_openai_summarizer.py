@@ -22,7 +22,7 @@ def test_summarize_with_openai_returns_expected_summary():
             return FakeResponse()
 
     class FakeClient:
-        response = FakeResponses()
+        responses = FakeResponses()
 
     result = summarize_with_openai(
         text=source_text,
