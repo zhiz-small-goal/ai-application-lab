@@ -56,3 +56,18 @@ class ProcessingTask(BaseModel):
 
 class TextAnalysisResult(BaseModel):
     summary: str
+
+
+class CompanyScreeningDecision(StrEnum):
+    KEEP = "KEEP"
+    REJECT = "REJECT"
+    UNCERTAIN = "UNCERTAIN"
+
+
+class CompanyScreeningResult(BaseModel):
+    facts: list[str]
+    inferences: list[str]
+    unknowns: list[str]
+    decision: CompanyScreeningDecision
+    decision_reason: str
+    missing_evidence: list[str]
