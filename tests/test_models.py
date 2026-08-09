@@ -209,3 +209,11 @@ def test_create_valid_evidence_extraction_result():
     )
     assert result.evidence[0].evidence_text == evidence_text
     assert result.evidence[0].supporting_text == supporting_text
+
+
+def test_reject_string_evidence():
+    with pytest.raises(ValidationError):
+        EvidenceExtractionResult(
+            evidence="hello."
+        )
+
