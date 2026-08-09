@@ -71,3 +71,13 @@ class CompanyScreeningResult(BaseModel):
     decision: CompanyScreeningDecision
     decision_reason: str
     missing_evidence: list[str]
+
+
+class EvidenceCandidata(BaseModel):
+    evidence_text: str
+    supporting_text: str
+
+
+class EvidenceExtractionResult(BaseModel):
+    evidecne: list[EvidenceCandidata]
+
