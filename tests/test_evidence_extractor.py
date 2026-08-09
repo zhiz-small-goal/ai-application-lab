@@ -8,7 +8,9 @@ def test_extract_evidence_passes_expected_args():
     expected_model = "test-model"
 
     class FakeResponse:
-        output_parsed: EvidenceExtractionResult
+        output_parsed = EvidenceExtractionResult(
+             evidence=[]
+        )
 
     class FakeResponses:
         def parse(
@@ -29,7 +31,7 @@ def test_extract_evidence_passes_expected_args():
     class FakeClient:
         responses = FakeResponses()
 
-    result = extract_evidence(
+    extract_evidence(
         raw_text=raw_text,
         extraction_rules=extract_rules,
         client=FakeClient(),
@@ -60,7 +62,8 @@ def test_extract_evidence_returns_expected_result():
                 *,
                 instructions: str,
                 input: str,
-                model: str
+                model: str,
+                text_format,
         ):
                 return FakeResponse()
     
