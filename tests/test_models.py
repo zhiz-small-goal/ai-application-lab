@@ -165,3 +165,22 @@ def test_reject_invalid_company_screening_decision():
         )
         
 
+def test_reject_non_list_company_screening_facts():
+    with pytest.raises(ValidationError):
+        CompanyScreeningResult(
+            facts="Company deployed AI in a real business workflow.",
+            inferences=[
+                "The company is worth further investigation."
+            ],
+            unknowns=[
+                "Individual entry opportunities are unknown."
+            ],
+            decision="KEEP",
+            decision_reason=(
+                "Real AI deployment supports further investigation."
+            ),
+            missing_evidence=[
+                "Internal and external AI capability structure."
+            ],
+        )
+
