@@ -73,11 +73,11 @@ class CompanyScreeningResult(BaseModel):
     missing_evidence: list[str]
 
 
-class EvidenceCandidata(BaseModel):
+class EvidenceCandidate(BaseModel):
     evidence_text: str
     supporting_text: str
 
 
 class EvidenceExtractionResult(BaseModel):
-    evidecne: list[EvidenceCandidata]
+    evidence: list[EvidenceCandidate]
 

@@ -5,10 +5,12 @@ import pytest
 from pydantic import ValidationError
 
 from models import (
+    EvidenceCandidate,
     FileProcessingStatus,
     FileRecord,
     CompanyScreeningDecision,
     CompanyScreeningResult,
+    EvidenceExtractionResult,
 )
 
 
@@ -184,3 +186,26 @@ def test_reject_non_list_company_screening_facts():
             ],
         )
 
+
+def test_create_valid_evidence_extraction_result():
+    evidence_text = "The company is recruiting an AI engineer."
+    supporting_text = (
+        "The company is currently recruiting an AI engineer "
+        "for its intelligent manufacturing team."
+    )
+
+    result = EvidenceExtractionResult(
+        evidence=[
+            EvidenceCandidate(
+                evidence_text=evidence_text,
+                supporting_text=supporting_text,
+            )
+        ]
+    )
+
+    assert isinstance(
+        result.evidence[0],
+        EvidenceCandidate,
+    )
+    assert result.evidence[0].evidence_text == evidence_text
+    assert result.evidence[0].supporting_text == supporting_text
