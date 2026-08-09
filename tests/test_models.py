@@ -141,3 +141,27 @@ def test_create_valid_company_screening_result():
     assert result.unknowns == unknowns
     assert result.decision_reason == decision_reason
     assert result.missing_evidence == missing_evidence
+
+
+def test_reject_invalid_company_screening_decision():
+    with pytest.raises(ValidationError):
+        CompanyScreeningResult(
+            facts=[
+                "Company deployed AI in a real business workflow."
+            ],
+            inferences=[
+                "The company is worth further investigation."
+            ],
+            unknowns=[
+                "Individual entry opportunities are unknown."
+            ],
+            decision="MAYBE",
+            decision_reason=(
+                "Real AI deployment supports further investigation."
+            ),
+            missing_evidence=[
+                "Internal and external AI capability structure."
+            ],
+        )
+        
+
