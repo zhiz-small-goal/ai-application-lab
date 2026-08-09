@@ -217,3 +217,14 @@ def test_reject_string_evidence():
             evidence="hello."
         )
 
+
+def test_reject_non_supporting_text():
+    with pytest.raises(ValidationError):
+        EvidenceExtractionResult(
+            evidence=[
+                EvidenceCandidate(
+                    evidence_text="hello",
+                )
+            ]
+        )
+
