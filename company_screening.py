@@ -8,6 +8,7 @@ def screen_company(
         client,
         model: str,
 ) -> CompanyScreeningResult:
+    """Screen a company using provided evidence and screening rules"""
     evidence_text = "\n".join(
         f"- {item}"
         for item in evidence
