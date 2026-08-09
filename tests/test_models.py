@@ -4,7 +4,12 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from models import FileProcessingStatus, FileRecord
+from models import (
+    FileProcessingStatus,
+    FileRecord,
+    CompanyScreeningDecision,
+    CompanyScreeningResult,
+)
 
 
 VALID_MODIFIED_TIME = datetime(
@@ -103,3 +108,36 @@ def test_reject_non_success_without_reason(
             status=status,
             reason="",
         )
+
+
+def test_create_valid_company_screening_result():
+    facts = [
+        "Company deployed AI in a real business workflow."
+        ]
+    inferences = [
+        "The company is worth further investigation."
+    ]
+    unknowns = [
+        "Individual entry opportunities are unknown."
+    ]
+    decision = "KEEP"
+    decision_reason = "Real AI deployment supports further investigation."
+    missing_evidence = [
+        "Internal and external AI capability structure."
+    ]
+
+    result = CompanyScreeningResult(
+        facts=facts,
+        inferences=inferences,
+        unknowns=unknowns,
+        decision=decision,
+        decision_reason=decision_reason,
+        missing_evidence=missing_evidence
+    )
+
+    assert result.decision is CompanyScreeningDecision.KEEP
+    assert result.facts == facts
+    assert result.inferences == inferences
+    assert result.unknowns == unknowns
+    assert result.decision_reason == decision_reason
+    assert result.missing_evidence == missing_evidence
