@@ -1,4 +1,4 @@
-from web_source_reader import read_web_source
+from web_source_reader import read_web_source, select_candidate_text
 
 
 def test_read_web_source_returns_page_text():
@@ -34,3 +34,20 @@ def test_read_web_source_returns_page_text():
     )
 
     assert page_text == expected_page_text
+
+
+def test_select_candidate_text_keeps_neighboring_segments():
+    raw_text = (
+        "General information\n"
+        "AI platform project\n"
+        "Project budget: 600000 RMB\n"
+        "Contact information"
+    )
+
+    result = select_candidate_text(
+        raw_text=raw_text,
+    )
+
+    assert "AI platform project" in result
+    assert "Project budget: 600000 RMB" in result
+

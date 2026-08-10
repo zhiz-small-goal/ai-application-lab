@@ -41,4 +41,5 @@ def select_candidate_text(
             for keyword in candidate_keywords
         ):
             selected_paragraphs.append(paragraph)
+            
     return "\n".join(selected_paragraphs)
