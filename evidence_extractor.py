@@ -33,7 +33,14 @@ def validate_evidence_grounding(
 ) -> None:
     """Validate that supporting text appears verbatim in the raw source."""
 
-    if supporting_text not in raw_text:
+    normalized_raw_text = "".join(
+        raw_text.split()
+    )
+    normalized_supporting_text = "".join(
+        supporting_text.split()
+    )
+
+    if normalized_supporting_text not in normalized_raw_text:
         raise ValueError(
             f"Supporting text is not grounded: {supporting_text!r}"
         )

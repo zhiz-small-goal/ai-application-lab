@@ -140,3 +140,21 @@ def test_extract_evidence_rejects_non_grounded_supporting_text():
             client=FakeClient(),
             model=model,
         )
+
+
+def test_validate_evidence_grounding_accepts_whitespace_differences():
+    raw_text = (
+        "湖南省招标有限责任公司受湖南银行股份有限公司的委托，对\n"
+        "湖南银行2025人工智能管理平台研发服务项目\n"
+        "进行公开招标采购"
+    )
+
+    supporting_text = (
+        "湖南省招标有限责任公司受湖南银行股份有限公司的委托，"
+        "对湖南银行2025人工智能管理平台研发服务项目进行公开招标采购"
+    )
+
+    validate_evidence_grounding(
+        raw_text=raw_text,
+        supporting_text=supporting_text,
+    )
