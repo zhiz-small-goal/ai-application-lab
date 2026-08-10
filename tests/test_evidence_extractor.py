@@ -42,11 +42,12 @@ def test_extract_evidence_passes_expected_args():
 
 
 def test_extract_evidence_returns_expected_result():
-    raw_text ="balabal"
-    extract_rules = "you are beaultiful."
+    raw_text = "Zhiz is learning AI application."
+    extract_rules = "you are beautiful."
     model = "test-model"
-    evidence_text = "bal"
-    supporting_text = "enen"
+
+    evidence_text = "Zhiz is learning AI."
+    supporting_text = "Zhiz is learning AI application."
 
     expected_result = EvidenceExtractionResult(
         evidence=[EvidenceCandidate(
