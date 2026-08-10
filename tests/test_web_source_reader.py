@@ -2,7 +2,7 @@ from web_source_reader import read_web_source
 
 
 def test_read_web_source_returns_page_text():
-    url = "https://test-rul"
+    url = "https://test-url"
 
     html = """
     <html>
@@ -14,7 +14,7 @@ def test_read_web_source_returns_page_text():
     """
     expected_page_text = (
         "Zhiz\n"
-        "Zhis is learnig AI."
+        "Zhiz is learning AI."
     )
 
     class FakeResponse:
