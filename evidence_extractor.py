@@ -16,7 +16,15 @@ def extract_evidence(
         text_format=EvidenceExtractionResult,
     )
 
-    return response.output_parsed
+    result = response.output_parsed
+
+    for item in result.evidence:
+        validate_evidence_grounding(
+            raw_text=raw_text,
+            supporting_text=item.supporting_text,
+        )
+
+    return result
 
 
 def validate_evidence_grounding(
