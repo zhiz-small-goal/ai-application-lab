@@ -34,4 +34,6 @@ def validate_evidence_grounding(
     """Validate that supporting text appears verbatim in the raw source."""
 
     if supporting_text not in raw_text:
-        raise ValueError
+        raise ValueError(
+            f"Supporting text is not grounded: {supporting_text!r}"
+        )
