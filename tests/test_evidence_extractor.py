@@ -11,7 +11,7 @@ def test_extract_evidence_passes_expected_args():
 
     class FakeResponse:
         output_parsed = EvidenceExtractionResult(
-             evidence=[]
+            evidence=[]
         )
 
     class FakeResponses:
@@ -56,19 +56,19 @@ def test_extract_evidence_returns_expected_result():
     )
 
     class FakeResponse:
-            output_parsed = expected_result
-    
+        output_parsed = expected_result
+
     class FakeResponses:
         def parse(
-                self,
-                *,
-                instructions: str,
-                input: str,
-                model: str,
-                text_format,
+            self,
+            *,
+            instructions: str,
+            input: str,
+            model: str,
+            text_format,
         ):
-                return FakeResponse()
-    
+            return FakeResponse()
+
     class FakeClient:
         responses = FakeResponses()
 
@@ -94,8 +94,8 @@ def test_validate_evidence_grounding_rejects_non_grounded_supporting_text():
 
     with pytest.raises(ValueError):
         validate_evidence_grounding(
-             raw_text=raw_text,
-             supporting_text=supporting_text
+            raw_text=raw_text,
+            supporting_text=supporting_text
         )
 
     
@@ -107,42 +107,35 @@ def test_extract_evidence_rejects_non_grounded_supporting_text():
     model = "test-model"
 
     expected_text = EvidenceExtractionResult(
-         evidence=[
-              EvidenceCandidate(
-                   evidence_text=evidence_text,
-                   supporting_text=supporting_text,
-              )
-         ]
+        evidence=[
+            EvidenceCandidate(
+                evidence_text=evidence_text,
+                supporting_text=supporting_text,
+            )
+        ]
     )
 
     class FakeResponse:
         output_parsed = expected_text
 
     class FakeResponses:
-         def parse(
-                   self,
-                   *,
-                   input,
-                   instructions: str,
-                   model: str,
-                   text_format,
-         ):
-              return FakeResponse()
+        def parse(
+            self,
+            *,
+            input,
+            instructions: str,
+            model: str,
+            text_format,
+        ):
+            return FakeResponse()
 
     class FakeClient:
         responses = FakeResponses()
 
-    result = extract_evidence(
-         raw_text=raw_text,
-         extraction_rules=extract_rules,
-         client=FakeClient(),
-         model=model,
-    )
-
     with pytest.raises(ValueError):
-         extract_evidence(
-              raw_text=raw_text,
-              extraction_rules=extract_rules,
-              client=FakeClient(),
-              model=model,
-         )
+        extract_evidence(
+            raw_text=raw_text,
+            extraction_rules=extract_rules,
+            client=FakeClient(),
+            model=model,
+        )
