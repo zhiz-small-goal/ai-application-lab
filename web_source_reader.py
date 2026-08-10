@@ -31,15 +31,27 @@ def select_candidate_text(
         "人工智能",
     ]
 
-    selected_paragraphs = []
-
     paragraphs = raw_text.split("\n")
 
-    for paragraph in paragraphs:
+    selected_indexes = set()
+
+    for index, paragraph in enumerate(paragraphs):
         if any(
             keyword in paragraph
             for keyword in candidate_keywords
         ):
-            selected_paragraphs.append(paragraph)
-            
+            if index > 0:
+                selected_indexes.add(index - 1)
+
+            selected_indexes.add(index)
+
+            if index < (len(paragraphs) - 1):
+                selected_indexes.add(index + 1)
+
+    selected_paragraphs = [
+        paragraph
+        for index, paragraph in enumerate(paragraphs)
+        if index in selected_indexes
+    ]
+
     return "\n".join(selected_paragraphs)
