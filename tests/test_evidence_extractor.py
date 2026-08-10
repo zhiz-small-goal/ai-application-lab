@@ -1,4 +1,6 @@
-from evidence_extractor import extract_evidence
+import pytest
+
+from evidence_extractor import extract_evidence, validate_evidence_grounding
 from models import EvidenceCandidate, EvidenceExtractionResult
 
 
@@ -80,4 +82,21 @@ def test_extract_evidence_returns_expected_result():
     assert result == expected_result
 
 
+def test_validate_evidence_grounding_reject_non_grounded_supporting_text():
+    raw_text = (
+    "湖南银行正在采购人工智能管理平台研发服务。"
+    "项目预算为60万元。"
+    )
+    supporting_text=(
+    "湖南银行正在采购人工智能管理平台研发服务"
+    "...项目预算为60万元"
+    )
+
+    with pytest.raises(ValueError):
+        validate_evidence_grounding(
+             raw_text=raw_text,
+             supporting_text=supporting_text
+        )
+
+    
     

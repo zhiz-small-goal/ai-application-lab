@@ -35,3 +35,4 @@ __pycache__/
 repomix-output.*
 input/note.txt
 deepseek_smoke_test.py
+web_source_reader_smoke_test.py

@@ -17,3 +17,13 @@ def extract_evidence(
     )
 
     return response.output_parsed
+
+
+def validate_evidence_grounding(
+        raw_text: str,
+        supporting_text: str,
+) -> None:
+    """Validate that supporting text appears verbatim in the raw source."""
+
+    if supporting_text not in raw_text:
+        raise ValueError
