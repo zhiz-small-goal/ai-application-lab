@@ -50,4 +50,31 @@ def test_select_candidate_text_keeps_neighboring_segments():
 
     assert "AI platform project" in result
     assert "Project budget: 600000 RMB" in result
+    assert "General information" in result
+
+
+def test_select_candidate_text_keeps_matching_segments():
+    raw_text = (
+        "General information\n"
+        "AI platform project\n"
+        "Other information"
+    )
+
+    result = select_candidate_text(raw_text=raw_text)
+
+    assert "AI platform project" in result
+
+
+def test_select_candidate_text_does_not_duplicate_overlapping_segments():
+    raw_text = (
+        "General information\n"
+        "AI platform project\n"
+        "大模型 service\n"
+        "Project budget"
+    )
+
+    result = select_candidate_text(raw_text=raw_text)
+
+    assert result.count("AI platform project") == 1
+    assert result.count("大模型 service") == 1
 
