@@ -6,13 +6,20 @@ def extract_evidence(
         extraction_rules: str,
         client,
         model: str,
+        llm_input_text: str | None = None,
 ) -> EvidenceExtractionResult:
     """Extract grounded evidence from raw source text."""
+
+    input_text = (
+        llm_input_text
+        if llm_input_text is not None
+        else raw_text
+    )
 
     response = client.responses.parse(
         model=model,
         instructions=extraction_rules,
-        input=raw_text,
+        input=input_text,
         text_format=EvidenceExtractionResult,
     )
 
