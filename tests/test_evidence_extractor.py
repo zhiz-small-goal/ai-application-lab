@@ -1,6 +1,10 @@
 import pytest
 
-from evidence_extractor import extract_evidence, validate_evidence_grounding
+from evidence_extractor import (
+    extract_evidence,
+    validate_evidence_grounding,
+    select_candidate_text,
+)
 from models import EvidenceCandidate, EvidenceExtractionResult
 
 
@@ -198,3 +202,63 @@ def test_extract_evidence_passes_llm_input_text():
         client=FakeClient(),
         llm_input_text=llm_input_text
     )
+
+
+def test_select_candidate_text_keeps_neighboring_segments():
+    raw_text = (
+        "General information\n"
+        "AI platform project\n"
+        "Project budget: 600000 RMB\n"
+        "Contact information"
+    )
+
+    result = select_candidate_text(
+        raw_text=raw_text,
+    )
+
+    assert "AI platform project" in result
+    assert "Project budget: 600000 RMB" in result
+    assert "General information" in result
+
+
+def test_select_candidate_text_keeps_matching_segments():
+    raw_text = (
+        "General information\n"
+        "AI platform project\n"
+        "Other information"
+    )
+
+    result = select_candidate_text(raw_text=raw_text)
+
+    assert "AI platform project" in result
+
+
+def test_select_candidate_text_does_not_duplicate_overlapping_segments():
+    raw_text = (
+        "General information\n"
+        "AI platform project\n"
+        "大模型 service\n"
+        "Project budget"
+    )
+
+    result = select_candidate_text(raw_text=raw_text)
+
+    assert result.count("AI platform project") == 1
+    assert result.count("大模型 service") == 1
+
+
+def test_select_candidate_text_distant_budget_evidence():
+    raw_text = (
+    "湖南银行2025人工智能管理平台研发服务项目\n"
+    "Some unrelated information\n"
+    "More unrelated information\n"
+    "项目预算为60万元\n"
+    "Contact information"
+    )
+
+    result = select_candidate_text(raw_text=raw_text)
+
+    assert "项目预算为60万元" in result
+
+
+
