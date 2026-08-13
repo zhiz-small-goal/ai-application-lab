@@ -158,3 +158,43 @@ def test_validate_evidence_grounding_accepts_whitespace_differences():
         raw_text=raw_text,
         supporting_text=supporting_text,
     )
+
+
+def test_extract_evidence_passes_llm_input_text():
+    raw_text = "This is test raw text."
+    llm_input_text = "Zhiz is beautiful."
+    expected_result = EvidenceExtractionResult(
+        evidence=[
+            EvidenceCandidate(
+                evidence_text="Zhiz is a woman.",
+                supporting_text="This is test raw text."
+            )
+        ]
+    )
+
+    class FakeResponse:
+        output_parsed = expected_result
+
+    class FakeResponses:
+        def parse(
+                self,
+                *,
+                input: str,
+                instructions: str,
+                model: str,
+                text_format,
+        ):
+            assert input == llm_input_text
+
+            return FakeResponse()
+
+    class FakeClient:
+        responses = FakeResponses()
+
+    extract_evidence(
+        raw_text=raw_text,
+        extraction_rules="test-extraction_rules",
+        model="test-model",
+        client=FakeClient(),
+        llm_input_text=llm_input_text
+    )
