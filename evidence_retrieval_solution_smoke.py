@@ -34,7 +34,7 @@ def split_into_chunks(
 expected_evidence = [
     "湖南银行2025人工智能管理平台研发服务项目",
     "公开招标采购",
-    "项目预算为60万元",
+    "项目预算：60万元",
     "供应商参与投标",
 ]
 
@@ -149,4 +149,13 @@ for rank, item in enumerate(
         f"\nRank {rank}"
         f"\nScore: {item['score']:.10f}"
         f"\nText: {preview[:300]}"
+    )
+
+
+print("\nExpected evidence in raw text:")
+
+for evidence in expected_evidence:
+    print(
+        evidence in raw_text,
+        repr(evidence),
     )
