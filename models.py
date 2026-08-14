@@ -87,3 +87,10 @@ class Chunk(BaseModel):
     text: str
     start: int
     end: int
+
+
+class ExpectedEvidence(BaseModel):
+    document_id: str
+    text: str
+    start: int
+    end: int
