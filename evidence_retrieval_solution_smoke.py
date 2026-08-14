@@ -2,33 +2,13 @@ import httpx
 
 from web_source_reader import read_web_source
 from FlagEmbedding import FlagReranker
+from chunking import split_into_chunks
 
 
 client = httpx.Client()
 
 
-def split_into_chunks(
-        text: str,
-        chunk_size: int = 800,
-        overlap: int = 200,
-) -> list[str]:
-    chunks = []
 
-    start = 0
-
-    while start < len(text):
-        end = start + chunk_size
-
-        chunks.append(
-            text[start:end]
-        )
-
-        if end >= len(text):
-            break
-
-        start = end - overlap
-
-    return chunks
 
 
 expected_evidence = [
