@@ -34,11 +34,12 @@ query = (
 
 chunks = split_into_chunks(
     text=raw_text,
+    document_id="doc001",
 )
 
 
 pairs = [
-    [query, chunk]
+    [query, chunk.text]
     for chunk in chunks
 ]
 
@@ -57,7 +58,7 @@ scores = reranker.compute_score(
 
 results = [
     {
-        "text": chunk,
+        "chunk": chunk,
         "score": float(score),
     }
     for chunk, score in zip(
@@ -79,7 +80,7 @@ def calculate_recall(
         top_k: int,
 ) -> float:
     selected_text = "\n".join(
-        item["text"]
+        item["chunk"].text
         for item in results[:top_k]
     )
 
@@ -99,7 +100,7 @@ for top_k in [3, 5, 10, 20]:
     )
 
     selected_chars = sum(
-        len(item["text"])
+        len(item["chunk"].text)
         for item in results[:top_k]
     )
 
@@ -120,7 +121,7 @@ for rank, item in enumerate(
     results[:10],
     start=1,
 ):
-    preview = item["text"].replace(
+    preview = item["chunk"].text.replace(
         "\n",
         "",
     )
