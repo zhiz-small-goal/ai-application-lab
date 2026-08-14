@@ -81,3 +81,9 @@ class EvidenceCandidate(BaseModel):
 class EvidenceExtractionResult(BaseModel):
     evidence: list[EvidenceCandidate]
 
+
+class Chunk(BaseModel):
+    document_id: str
+    text: str
+    start: int
+    end: int
