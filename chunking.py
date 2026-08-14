@@ -48,3 +48,27 @@ def chunk_covers_evidence(
         and chunk.end >= evidence.end
     )
 
+
+def calculate_evidence_recall(
+        results: list[dict],
+        expected_evidence: list[ExpectedEvidence],
+        top_k: int,
+) -> float:
+    """Calculate the fraction of expected evidence fully covered by top-k chunks."""
+
+    hits = 0
+
+    for evidence in expected_evidence:
+        is_hit = any(
+            chunk_covers_evidence(
+                evidence=evidence,
+                chunk=chunk,
+            )
+            for chunk in results[:top_k]
+        )
+
+        if is_hit:
+            hits += 1
+
+    return hits / len(expected_evidence)
+
