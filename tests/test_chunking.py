@@ -1,4 +1,4 @@
-from chunking import split_into_chunks, chunk_covers_evidence
+from chunking import split_into_chunks, chunk_covers_evidence, calculate_evidence_recall
 from models import Chunk, ExpectedEvidence
 
 
@@ -61,3 +61,51 @@ def test_chunk_covers_evidence_returns_true():
     )
 
     assert result is True
+
+
+def test_calculate_evidence_recall_returns_fraction_of_covered_evidence():
+    expected_evidence = [
+        ExpectedEvidence(
+            document_id="doc-001",
+            text="cdef",
+            start=2,
+            end=6,
+        ),
+        ExpectedEvidence(
+            document_id="doc-001",
+            text="ijkl",
+            start=8,
+            end=12,
+        ),
+    ]
+
+    results = [
+        {
+            "chunk": Chunk(
+                document_id="doc-001",
+                text="abcdefgh",
+                start=0,
+                end=8,
+            ),
+            "score": 0.9
+        },
+        {
+            "chunk": Chunk(
+                document_id="doc-001",
+                text="mnop",
+                start=12,
+                end=16,
+            ),
+            "score": 0.8
+        },
+    ]
+
+    result = calculate_evidence_recall(
+        results=results,
+        expected_evidence=expected_evidence,
+        top_k=2,
+    )
+
+    assert result == 0.5
+
+

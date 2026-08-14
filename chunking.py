@@ -62,9 +62,9 @@ def calculate_evidence_recall(
         is_hit = any(
             chunk_covers_evidence(
                 evidence=evidence,
-                chunk=chunk,
+                chunk=item["chunk"],
             )
-            for chunk in results[:top_k]
+            for item in results[:top_k]
         )
 
         if is_hit:
