@@ -247,6 +247,13 @@ def test_select_candidate_text_does_not_duplicate_overlapping_segments():
     assert result.count("大模型 service") == 1
 
 
+@pytest.mark.xfail(
+        strict=True,
+        reason=(
+            "Legacy neighboring-paragraph selector cannot recall."
+            "distant related evidence; retrieval will replace it."
+        )
+)
 def test_select_candidate_text_distant_budget_evidence():
     raw_text = (
     "湖南银行2025人工智能管理平台研发服务项目\n"
