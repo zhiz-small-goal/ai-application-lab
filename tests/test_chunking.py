@@ -1,4 +1,5 @@
-from chunking import split_into_chunks
+from chunking import split_into_chunks, chunk_covers_evidence
+from models import Chunk, ExpectedEvidence
 
 
 def test_split_into_chunks_returns_expected_chunks_with_provenance():
@@ -37,3 +38,26 @@ def test_split_into_chunks_returns_expected_chunks_with_provenance():
         chunks[1:],
     ):
         assert previous_chunk.end - current_chunk.start == overlap
+
+
+def test_chunk_covers_evidence_returns_true():
+    chunk = Chunk(
+        document_id="doc-001",
+        text="abcdefgh",
+        start=0,
+        end=8,
+    )
+
+    evidence = ExpectedEvidence(
+        document_id="doc-001",
+        text="cdef",
+        start=2,
+        end=6,
+    )
+
+    result = chunk_covers_evidence(
+        chunk=chunk,
+        evidence=evidence,
+    )
+
+    assert result is True
