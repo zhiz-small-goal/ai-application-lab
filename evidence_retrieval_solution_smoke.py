@@ -1,9 +1,13 @@
 import httpx
 
+from pathlib import Path
+
+
 from web_source_reader import read_web_source
 from FlagEmbedding import FlagReranker
 from chunking import split_into_chunks, calculate_evidence_recall
 from models import ExpectedEvidence
+from content_reader import read_text_content
 
 
 client = httpx.Client()
@@ -40,11 +44,19 @@ expected_evidence = [
 ]
 
 
-raw_text = read_web_source(
-    url="https://www.hunan-bank.com/96599/2025-11/21/"
-        "article_2025112118011847442.shtml?sessionid=",
-    client=client,
+raw_text = read_text_content(
+    Path(
+        "evaluation_samples/"
+        "hunan_bank_ai_platform_2025.txt"
+    )
 )
+
+
+for evidence in expected_evidence:
+    assert(
+        raw_text[evidence.start:evidence.end]
+        == evidence.text
+    )
 
 
 query = (

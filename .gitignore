@@ -39,3 +39,5 @@ deepseek_smoke_test.py
 .gitignore
 
 evidence_reranker_smoke.py
+evaluation_samples/hunan_bank_ai_platform_2025.txt
+evaluation_samples/
