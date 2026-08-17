@@ -5,43 +5,12 @@ from pathlib import Path
 
 from web_source_reader import read_web_source
 from FlagEmbedding import FlagReranker
-from chunking import split_into_chunks, calculate_evidence_recall
+from chunking import split_into_chunks, calculate_evidence_recall, locate_evidence_span
 from models import ExpectedEvidence
 from content_reader import read_text_content
 
 
 client = httpx.Client()
-
-
-
-
-
-expected_evidence = [
-    ExpectedEvidence(
-        document_id="doc001",
-        text="湖南银行2025人工智能管理平台研发服务项目",
-        start=3202,
-        end=3224,
-    ),
-    ExpectedEvidence(
-        document_id="doc001",
-        text="公开招标采购",
-        start=3299,
-        end=3305,
-    ),
-    ExpectedEvidence(
-        document_id="doc001",
-        text="项目预算：60万元",
-        start=3385,
-        end=3394,
-    ),
-    ExpectedEvidence(
-        document_id="doc001",
-        text="供应商参与投标",
-        start=3316,
-        end=3323,
-    ), 
-]
 
 
 raw_text = read_text_content(
@@ -50,6 +19,60 @@ raw_text = read_text_content(
         "hunan_bank_ai_platform_2025.txt"
     )
 )
+
+
+evidences = [
+    "湖南银行2025人工智能管理平台研发服务项目",
+    "公开招标采购",
+    "项目预算：60万元",
+    "供应商参与投标",
+]
+
+
+expected_evidence = []
+
+
+for evidence_text in evidences:
+    start, end = locate_evidence_span(
+        evidence_text=evidence_text,
+        parsed_text=raw_text,
+    )
+    expected_evidence.append(
+        ExpectedEvidence(
+            document_id="doc001",
+            text=evidence_text,
+            start=start,
+            end=end,
+        )
+    )
+
+
+# expected_evidence = [
+#     ExpectedEvidence(
+#         document_id="doc001",
+#         text="湖南银行2025人工智能管理平台研发服务项目",
+#         start=3202,
+#         end=3224,
+#     ),
+#     ExpectedEvidence(
+#         document_id="doc001",
+#         text="公开招标采购",
+#         start=3299,
+#         end=3305,
+#     ),
+#     ExpectedEvidence(
+#         document_id="doc001",
+#         text="项目预算：60万元",
+#         start=3385,
+#         end=3394,
+#     ),
+#     ExpectedEvidence(
+#         document_id="doc001",
+#         text="供应商参与投标",
+#         start=3316,
+#         end=3323,
+#     ), 
+# ]
 
 
 for evidence in expected_evidence:

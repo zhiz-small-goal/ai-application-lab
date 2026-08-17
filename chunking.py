@@ -85,15 +85,22 @@ def locate_evidence_span(
     for index, text in enumerate(parsed_text):
         if text.isspace():
             continue
-        else:
-            normalized_chars.append(text)
-            position_map.append(index)
+        
+        normalized_chars.append(text)
+        position_map.append(index)
 
     normalized_evidence_text = ("".join(evidence_text.split()))
     normalized_parsed_text = "".join(normalized_chars)
 
-    if normalized_evidence_text not in normalized_parsed_text:
+    count = normalized_parsed_text.count(normalized_evidence_text)
+
+    if count == 0:
         return None
+
+    if count > 1:
+        raise ValueError(
+            f"Multiple evidence matches found: {count}"
+        )
 
     normalized_start = normalized_parsed_text.find(normalized_evidence_text)
 
