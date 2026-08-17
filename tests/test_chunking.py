@@ -1,4 +1,10 @@
-from chunking import split_into_chunks, chunk_covers_evidence, calculate_evidence_recall
+from chunking import (
+    split_into_chunks,
+    chunk_covers_evidence,
+    calculate_evidence_recall,
+    locate_evidence_span,
+)
+
 from models import Chunk, ExpectedEvidence
 
 

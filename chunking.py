@@ -72,3 +72,35 @@ def calculate_evidence_recall(
 
     return hits / len(expected_evidence)
 
+
+def locate_evidence_span(
+        evidence_text: str,
+        parsed_text: str,
+) -> tuple[int, int] | None:
+    """Locate evidence in parsed text and return its start and end offsets, or None if not found."""
+
+    normalized_chars = []
+    position_map = []
+
+    for index, text in enumerate(parsed_text):
+        if text.isspace():
+            continue
+        else:
+            normalized_chars.append(text)
+            position_map.append(index)
+
+    normalized_evidence_text = ("".join(evidence_text.split()))
+    normalized_parsed_text = "".join(normalized_chars)
+
+    if normalized_evidence_text not in normalized_parsed_text:
+        return None
+
+    normalized_start = normalized_parsed_text.find(normalized_evidence_text)
+
+    original_start = position_map[normalized_start]
+    original_end = position_map[normalized_start + len(normalized_evidence_text) - 1] + 1
+
+    
+    return (original_start, original_end,)
+
+
