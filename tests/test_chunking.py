@@ -109,3 +109,14 @@ def test_calculate_evidence_recall_returns_fraction_of_covered_evidence():
     assert result == 0.5
 
 
+def test_locate_evidence_span_whitespace_differences_returns_original_offsets():
+    parsed_text = "前文项目预算：\n60万元后文"
+    evidence_text = "项目预算：60万元"
+
+    start, end = locate_evidence_span(
+        parsed_text=parsed_text,
+        evidence_text=evidence_text,
+    )
+
+    assert start == len("前文")
+    assert end == len("前文项目预算：\n60万元")
