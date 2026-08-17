@@ -1,3 +1,5 @@
+import pytest
+
 from chunking import (
     split_into_chunks,
     chunk_covers_evidence,
@@ -138,4 +140,22 @@ def test_locate_evidence_span_returns_none_when_evidence_not_found():
     )
 
     assert result is None
+
+
+def test_locate_evidence_span_raises_error_when_multiple_matches_found():
+    parsed_text = (
+        "项目预算：60万元"
+        "中间内容"
+        "项目预算：60万元"
+    )
+    evidence_text = "项目预算：60万元"
+
+    with pytest.raises(
+        ValueError,
+        match="Multiple evidence matches found",
+    ):
+        locate_evidence_span(
+            parsed_text=parsed_text,
+            evidence_text=evidence_text,
+        )
 
