@@ -120,3 +120,16 @@ def test_locate_evidence_span_whitespace_differences_returns_original_offsets():
 
     assert start == len("前文")
     assert end == len("前文项目预算：\n60万元")
+
+
+def test_locate_evidence_span_returns_none_when_evidence_not_found():
+    parsed_text = "前文项目预算：\n60万元后文"
+    evidence_text = "枝枝大宝贝"
+
+    result = locate_evidence_span(
+        parsed_text=parsed_text,
+        evidence_text=evidence_text,
+    )
+
+    assert result is None
+
