@@ -2,7 +2,8 @@ import httpx
 
 from web_source_reader import read_web_source
 from FlagEmbedding import FlagReranker
-from chunking import split_into_chunks
+from chunking import split_into_chunks, calculate_evidence_recall
+from models import ExpectedEvidence
 
 
 client = httpx.Client()
@@ -12,10 +13,30 @@ client = httpx.Client()
 
 
 expected_evidence = [
-    "湖南银行2025人工智能管理平台研发服务项目",
-    "公开招标采购",
-    "项目预算：60万元",
-    "供应商参与投标",
+    ExpectedEvidence(
+        document_id="doc001",
+        text="湖南银行2025人工智能管理平台研发服务项目",
+        start=3202,
+        end=3224,
+    ),
+    ExpectedEvidence(
+        document_id="doc001",
+        text="公开招标采购",
+        start=3299,
+        end=3305,
+    ),
+    ExpectedEvidence(
+        document_id="doc001",
+        text="项目预算：60万元",
+        start=3385,
+        end=3394,
+    ),
+    ExpectedEvidence(
+        document_id="doc001",
+        text="供应商参与投标",
+        start=3316,
+        end=3323,
+    ), 
 ]
 
 
@@ -74,26 +95,8 @@ results.sort(
 )
 
 
-def calculate_recall(
-        results: list[dict],
-        expected_evidence: list[str],
-        top_k: int,
-) -> float:
-    selected_text = "\n".join(
-        item["chunk"].text
-        for item in results[:top_k]
-    )
-
-    hits = sum(
-        evidence in selected_text
-        for evidence in expected_evidence
-    )
-
-    return hits / len(expected_evidence)
-
-
 for top_k in [3, 5, 10, 20]:
-    recall = calculate_recall(
+    recall = calculate_evidence_recall(
         results=results,
         expected_evidence=expected_evidence,
         top_k=top_k,
@@ -137,6 +140,6 @@ print("\nExpected evidence in raw text:")
 
 for evidence in expected_evidence:
     print(
-        evidence in raw_text,
+        evidence.text in raw_text,
         repr(evidence),
     )

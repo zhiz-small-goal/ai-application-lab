@@ -40,7 +40,7 @@ def chunk_covers_evidence(
         chunk: Chunk,
         evidence: ExpectedEvidence,
 ) -> bool:
-    """Return whether one chunk fully covers an epected evidence span."""
+    """Return whether one chunk fully covers an expected evidence span."""
 
     return(
         chunk.document_id == evidence.document_id

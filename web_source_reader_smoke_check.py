@@ -115,70 +115,102 @@ Evidence 必须由原文直接支持。
 model = "deepseek-v4-flash"
 
 
-llm_client = OpenAI(
-    api_key=os.environ["DEEPSEEK_API_KEY"],
-    base_url="https://api.deepseek.com",
-)
+# llm_client = OpenAI(
+#     api_key=os.environ["DEEPSEEK_API_KEY"],
+#     base_url="https://api.deepseek.com",
+# )
 
 
 
 
-with httpx.Client() as client:
-    for seed in seeds:
-        start_time = perf_counter()
+# with httpx.Client() as client:
+#     for seed in seeds:
+#         start_time = perf_counter()
 
-        print(f"\nCompany: {seed["company"]}")
+#         print(f"\nCompany: {seed["company"]}")
 
-        print("Start get web source text...")
-        raw_text = read_web_source(
-            url=seed["source_url"],
-            client=client,
-        )
+#         print("Start get web source text...")
+#         raw_text = read_web_source(
+#             url=seed["source_url"],
+#             client=client,
+#         )
 
-        print("get web soruce text end...")
-        read_web_time = perf_counter() - start_time
-        print("read_web_time: ", read_web_time)
-
-
-        print("\n\nstart select candidate text...")
-        candidate_text = select_candidate_text(
-            raw_text=raw_text,
-        )
-        print("\n select candidate text end.")
-        print("\nselect candidate text: ", candidate_text)
-        select_text_time = perf_counter() - read_web_time
-        print("\n select candidate time: ", select_text_time)
+#         print("get web soruce text end...")
+#         read_web_time = perf_counter() - start_time
+#         print("read_web_time: ", read_web_time)
 
 
-        print("\n\nStart extraction evidence...")
-        extraction_result = extract_evidence(
-            raw_text=raw_text,
-            extraction_rules=extraction_rules,
-            client=llm_client,
-            model=model,
-            llm_input_text=candidate_text,
-        )
+#         print("\n\nstart select candidate text...")
+#         candidate_text = select_candidate_text(
+#             raw_text=raw_text,
+#         )
+#         print("\n select candidate text end.")
+#         print("\nselect candidate text: ", candidate_text)
+#         select_text_time = perf_counter() - read_web_time
+#         print("\n select candidate time: ", select_text_time)
 
 
-        print("Start screening company...\n")
-        evidence = [
-            item.evidence_text
-            for item in extraction_result.evidence
-        ]
-        screening_result = screen_company(
-            company=seed["company"],
-            evidence=evidence,
-            screening_rules=SCREENING_RULES,
-            client=llm_client,
-            model=model,
-        )
+#         print("\n\nStart extraction evidence...")
+#         extraction_result = extract_evidence(
+#             raw_text=raw_text,
+#             extraction_rules=extraction_rules,
+#             client=llm_client,
+#             model=model,
+#             llm_input_text=candidate_text,
+#         )
 
-        screen_company_elapsed_time = perf_counter() - select_text_time
 
-        print(f"Evidence extraction: {screen_company_elapsed_time}s")
-        print(f"公司筛选结果是：\n\n{screening_result}\n\n")
+#         print("Start screening company...\n")
+#         evidence = [
+#             item.evidence_text
+#             for item in extraction_result.evidence
+#         ]
+#         screening_result = screen_company(
+#             company=seed["company"],
+#             evidence=evidence,
+#             screening_rules=SCREENING_RULES,
+#             client=llm_client,
+#             model=model,
+#         )
+
+#         screen_company_elapsed_time = perf_counter() - select_text_time
+
+#         print(f"Evidence extraction: {screen_company_elapsed_time}s")
+#         print(f"公司筛选结果是：\n\n{screening_result}\n\n")
         
 
-print("End")
+# print("End")
 
+print("Content is: \n")
+raw_text = read_web_source(
+    url=seeds[0]["source_url"],
+    client=httpx.Client(),
+)
+print(len(raw_text))
 
+evidence_text = "供应商参与投标"
+
+start = 0
+
+while True:
+    index = raw_text.find(evidence_text, start)
+
+    if index == -1:
+        break
+
+    print(
+        "start:", index,
+        "end:", index + len(evidence_text),
+        "context:",
+        repr(
+            raw_text[
+                max(0, index - 50):
+                index + len(evidence_text) + 100
+            ]
+        ),
+    )
+
+    start = index + 1
+
+print(start)
+print(start - len("湖南银行2025人工智能管理平台研发服务项目"))
