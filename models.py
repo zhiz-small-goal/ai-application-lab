@@ -94,3 +94,10 @@ class ExpectedEvidence(BaseModel):
     text: str
     start: int
     end: int
+
+
+class TextQuoteSelector(BaseModel):
+    exact: str
+    prefix: str
+    suffix: str
+
