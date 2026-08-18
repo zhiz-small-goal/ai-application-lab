@@ -13,3 +13,23 @@ def test_project_evidence_span_projects_after_prefix_removed():
     )
 
     assert result == (4, 12)
+
+
+def test_project_evidence_span_projects_coreect_duplicate_occurrence():
+    reference_text = (
+        "AAA|EVIDENCE|BBB|EVIDENCE|CCC"
+    )
+    parser_text = (
+        "AAA|EVIDENCE|XXX|BBB|EVIDENCE|CCC"
+    )
+
+    result = project_evidence_span(
+        reference_text=reference_text,
+        # Select the second EVIDENCE occurrence.
+        reference_start=17,
+        reference_end=25,
+        parser_text=parser_text,
+    )
+
+    assert result == (21, 29)
+
