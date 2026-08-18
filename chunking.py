@@ -1,4 +1,4 @@
-from models import Chunk, ExpectedEvidence
+from models import Chunk, ExpectedEvidence, TextQuoteSelector
 
 
 def split_into_chunks(
@@ -109,5 +109,32 @@ def locate_evidence_span(
 
     
     return (original_start, original_end,)
+
+
+def resolve_text_quote_selector(
+        parsed_text: str,
+        text_selector: TextQuoteSelector,
+) -> tuple[int, int] | None:
+    """Return offsets when a text quote has unique context match."""
+
+    quote = (
+        text_selector.prefix
+        + text_selector.exact
+        + text_selector.suffix
+    )
+
+    quote_start = parsed_text.find(quote)
+
+    if quote_start == -1:
+        return None
+
+    if parsed_text.find(quote, quote_start + 1) != -1:
+        raise ValueError("Multiple text quote matches found")
+
+    start = quote_start + len(text_selector.prefix)
+    end = start + len(text_selector.exact)
+
+    return start, end
+
 
 
