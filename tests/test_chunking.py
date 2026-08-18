@@ -5,9 +5,10 @@ from chunking import (
     chunk_covers_evidence,
     calculate_evidence_recall,
     locate_evidence_span,
+    resolve_text_quote_selector,
 )
 
-from models import Chunk, ExpectedEvidence
+from models import Chunk, ExpectedEvidence, TextQuoteSelector
 
 
 def test_split_into_chunks_returns_expected_chunks_with_provenance():
@@ -158,4 +159,38 @@ def test_locate_evidence_span_raises_error_when_multiple_matches_found():
             parsed_text=parsed_text,
             evidence_text=evidence_text,
         )
+
+
+def test_resolve_text_quote_selector_returns_offsets_for_unique_context_match():
+    parsed_text =(
+    "导航供应商参与投标查看详情"
+    "正文根据招标要求供应商参与投标并提交材料"
+    )
+
+    text_selector = TextQuoteSelector(
+        exact="供应商参与投标",
+        prefix="正文根据招标要求",
+        suffix="并提交材料",
+    )
+
+    selected_start, selected_end = resolve_text_quote_selector(
+        parsed_text=parsed_text,
+        text_selector=text_selector,
+    )
+
+    expected_start = (
+        parsed_text.index(text_selector.prefix)
+        + len(text_selector.prefix)
+    )
+
+    expected_end = expected_start + len(text_selector.exact)
+
+    assert selected_start == expected_start
+    assert selected_end == expected_end
+    assert parsed_text[selected_start:selected_end] == text_selector.exact
+
+
+
+
+
 
