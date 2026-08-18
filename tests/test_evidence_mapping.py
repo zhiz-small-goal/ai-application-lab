@@ -39,7 +39,7 @@ def test_project_evidence_span_returns_none_when_target_evidence_is_removed():
             "AAA|EVIDENCE|BBB|EVIDENCE|CCC"
         )
     parser_text = (
-        "AAA|EVIDENCE|BBB|CCC"e
+        "AAA|EVIDENCE|BBB|CCC"
     )
 
     result = project_evidence_span(
@@ -51,4 +51,18 @@ def test_project_evidence_span_returns_none_when_target_evidence_is_removed():
     )
 
     assert result is None
+
+
+def test_project_evidence_span_handles_whitespace_difference():
+    reference_text = "AAA|EVI  DENCE|BBB"
+    parser_text = "AAA|EVI DENCE|BBB"
+
+    result = project_evidence_span(
+        reference_text=reference_text,
+        reference_start=4,
+        reference_end=14,
+        parser_text=parser_text,
+    )
+
+    assert result == (4, 13)
 
