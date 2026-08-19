@@ -1,3 +1,6 @@
+from pathlib import Path
+
+from bs4 import BeautifulSoup
 import httpx
 from openai import OpenAI
 import os
@@ -181,36 +184,50 @@ model = "deepseek-v4-flash"
 
 # print("End")
 
-print("Content is: \n")
-raw_text = read_web_source(
-    url=seeds[0]["source_url"],
-    client=httpx.Client(),
+# print("Content is: \n")
+# raw_text = read_web_source(
+#     url=seeds[0]["source_url"],
+#     client=httpx.Client(),
+# )
+# print(len(raw_text))
+
+# evidence_text = "供应商参与投标"
+
+# start = 0
+
+# while True:
+#     index = raw_text.find(evidence_text, start)
+
+#     if index == -1:
+#         break
+
+#     print(
+#         "start:", index,
+#         "end:", index + len(evidence_text),
+#         "context:",
+#         repr(
+#             raw_text[
+#                 max(0, index - 50):
+#                 index + len(evidence_text) + 100
+#             ]
+#         ),
+#     )
+
+#     start = index + 1
+
+# print(start)
+# print(start - len("湖南银行2025人工智能管理平台研发服务项目"))
+
+
+client = httpx.Client()
+print(type(client))
+
+response = client.get(seeds[0]["source_url"])
+
+print(type(response.text))
+
+
+(Path("evaluation_samples/hunan_ai_platform_2025.html")).write_text(
+    data=response.text,
+    encoding="utf-8",
 )
-print(len(raw_text))
-
-evidence_text = "供应商参与投标"
-
-start = 0
-
-while True:
-    index = raw_text.find(evidence_text, start)
-
-    if index == -1:
-        break
-
-    print(
-        "start:", index,
-        "end:", index + len(evidence_text),
-        "context:",
-        repr(
-            raw_text[
-                max(0, index - 50):
-                index + len(evidence_text) + 100
-            ]
-        ),
-    )
-
-    start = index + 1
-
-print(start)
-print(start - len("湖南银行2025人工智能管理平台研发服务项目"))
