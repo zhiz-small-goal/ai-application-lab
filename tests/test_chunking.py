@@ -8,8 +8,12 @@ from chunking import (
     resolve_text_quote_selector,
 )
 
-from models import Chunk, ExpectedEvidence, TextQuoteSelector
-
+from models import(
+Chunk,
+ExpectedEvidence,
+TextQuoteSelector,
+EvidenceSupport,
+)
 
 def test_split_into_chunks_returns_expected_chunks_with_provenance():
     document_id = "doc-001"
@@ -190,7 +194,43 @@ def test_resolve_text_quote_selector_returns_offsets_for_unique_context_match():
     assert parsed_text[selected_start:selected_end] == text_selector.exact
 
 
+def test_calculate_evidence_recall_returns_full_recall_when_any_support_is_covered():
+    expected_evidence = [
+        ExpectedEvidence(
+            document_id="doc-001",
+            text="TARGET",
+            supports=[
+                EvidenceSupport(
+                    start=2,
+                    end=8,
+                ),
+                EvidenceSupport(
+                    start=12,
+                    end=18,
+                ),
+            ],
+        ),
+    ]
 
+    results = [
+        {
+            "chunk": Chunk(
+                document_id="doc001",
+                text="ccTARGETdd",
+                start=10,
+                end=20,
+    ),
+            "score": 0.9,
+        }
+    ]
+
+    result = calculate_evidence_recall(
+        results=results,
+        expected_evidence=expected_evidence,
+        top_k=1,
+    )
+
+    assert result == 1
 
 
 

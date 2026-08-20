@@ -89,15 +89,20 @@ class Chunk(BaseModel):
     end: int
 
 
+class EvidenceSupport(BaseModel):
+    start: int
+    end: int
+    
+
 class ExpectedEvidence(BaseModel):
     document_id: str
     text: str
-    start: int
-    end: int
+    support: EvidenceSupport
 
 
 class TextQuoteSelector(BaseModel):
     exact: str
     prefix: str
     suffix: str
+
 

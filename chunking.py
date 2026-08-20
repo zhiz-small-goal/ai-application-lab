@@ -44,8 +44,8 @@ def chunk_covers_evidence(
 
     return(
         chunk.document_id == evidence.document_id
-        and chunk.start <= evidence.start
-        and chunk.end >= evidence.end
+        and chunk.start <= evidence.support.start
+        and chunk.end >= evidence.support.end
     )
 
 
