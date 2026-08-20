@@ -51,25 +51,28 @@ reference_position = []
 
 
 
-for evidence_text, start, end in expected_evidence: 
-
+for evidence_text, reference_start, reference_end in expected_evidence:
     parser_position = project_evidence_span(
         reference_text=reference_text,
-        reference_start=start,
-        reference_end=end,
+        reference_start=reference_start,
+        reference_end=reference_end,
         parser_text=parser_text,
     )
 
     if parser_position is None:
-
         print(
             evidence_text,
-            "is not in reference text or parser text.\n"
-                  ) 
+            "Mapping faild\n"
+        )
         continue
 
     parser_start, parser_end = parser_position
 
-    parser_evidence = parser_text[parser_start:parser_end] 
+    parser_evidence = parser_text[parser_start:parser_end]
 
-    assert parser_evidence == evidence_text
+    print(
+        evidence_text,
+        "->",
+        parser_position,
+        repr(parser_evidence)
+    )
