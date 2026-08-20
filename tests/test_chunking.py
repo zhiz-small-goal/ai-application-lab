@@ -64,8 +64,12 @@ def test_chunk_covers_evidence_returns_true():
     evidence = ExpectedEvidence(
         document_id="doc-001",
         text="cdef",
-        start=2,
-        end=6,
+        supports=[
+            EvidenceSupport(
+                start=2,
+                end=6,
+            )
+        ]
     )
 
     result = chunk_covers_evidence(
@@ -81,14 +85,22 @@ def test_calculate_evidence_recall_returns_fraction_of_covered_evidence():
         ExpectedEvidence(
             document_id="doc-001",
             text="cdef",
-            start=2,
-            end=6,
+            supports=[
+                EvidenceSupport(
+                    start=2,
+                    end=6,
+                )
+            ]
         ),
         ExpectedEvidence(
             document_id="doc-001",
             text="ijkl",
-            start=8,
-            end=12,
+            supports=[
+                EvidenceSupport(
+                    start=8,
+                    end=12,
+                )
+            ]
         ),
     ]
 
