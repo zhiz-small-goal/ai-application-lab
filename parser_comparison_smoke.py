@@ -123,7 +123,7 @@ for evidence in expected_evidence:
     parser_expected_evidence.append(
         ExpectedEvidence(
             document_id=doc_id,
-            text=parser_text,
+            text=evidence.text,
             supports=parser_supports,
         )
     )
