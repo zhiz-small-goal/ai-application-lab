@@ -40,13 +40,19 @@ def chunk_covers_evidence(
         chunk: Chunk,
         evidence: ExpectedEvidence,
 ) -> bool:
-    """Return whether one chunk fully covers an expected evidence span."""
+    """Return whether one chunk fully covers any valid evidence support."""
 
-    return(
-        chunk.document_id == evidence.document_id
-        and chunk.start <= evidence.support.start
-        and chunk.end >= evidence.support.end
-    )
+    if chunk.document_id != evidence.document_id:
+        return False
+
+    for support in evidence.supports:
+        if (
+            chunk.start <= support.start
+            and chunk.end >= support.end
+        ):
+            return True
+
+    return False
 
 
 def calculate_evidence_recall(
