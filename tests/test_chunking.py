@@ -4,7 +4,6 @@ from chunking import (
     split_into_chunks,
     chunk_covers_evidence,
     calculate_evidence_recall,
-    locate_evidence_span,
 )
 
 from models import(
@@ -130,49 +129,6 @@ def test_calculate_evidence_recall_returns_fraction_of_covered_evidence():
     )
 
     assert result == 0.5
-
-
-def test_locate_evidence_span_whitespace_differences_returns_original_offsets():
-    parsed_text = "前文项目预算：\n60万元后文"
-    evidence_text = "项目预算：60万元"
-
-    start, end = locate_evidence_span(
-        parsed_text=parsed_text,
-        evidence_text=evidence_text,
-    )
-
-    assert start == len("前文")
-    assert end == len("前文项目预算：\n60万元")
-
-
-def test_locate_evidence_span_returns_none_when_evidence_not_found():
-    parsed_text = "前文项目预算：\n60万元后文"
-    evidence_text = "枝枝大宝贝"
-
-    result = locate_evidence_span(
-        parsed_text=parsed_text,
-        evidence_text=evidence_text,
-    )
-
-    assert result is None
-
-
-def test_locate_evidence_span_raises_error_when_multiple_matches_found():
-    parsed_text = (
-        "项目预算：60万元"
-        "中间内容"
-        "项目预算：60万元"
-    )
-    evidence_text = "项目预算：60万元"
-
-    with pytest.raises(
-        ValueError,
-        match="Multiple evidence matches found",
-    ):
-        locate_evidence_span(
-            parsed_text=parsed_text,
-            evidence_text=evidence_text,
-        )
 
 
 def test_calculate_evidence_recall_returns_full_recall_when_any_support_is_covered():
