@@ -97,7 +97,7 @@ class EvidenceSupport(BaseModel):
 class ExpectedEvidence(BaseModel):
     document_id: str
     text: str
-    support: EvidenceSupport
+    supports: list[EvidenceSupport]
 
 
 class TextQuoteSelector(BaseModel):

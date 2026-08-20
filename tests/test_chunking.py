@@ -215,7 +215,7 @@ def test_calculate_evidence_recall_returns_full_recall_when_any_support_is_cover
     results = [
         {
             "chunk": Chunk(
-                document_id="doc001",
+                document_id="doc-001",
                 text="ccTARGETdd",
                 start=10,
                 end=20,
