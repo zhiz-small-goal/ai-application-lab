@@ -100,9 +100,4 @@ class ExpectedEvidence(BaseModel):
     supports: list[EvidenceSupport]
 
 
-class TextQuoteSelector(BaseModel):
-    exact: str
-    prefix: str
-    suffix: str
-
 
