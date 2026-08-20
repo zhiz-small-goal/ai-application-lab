@@ -27,6 +27,7 @@ parser_text = extract(
     html
 )
 
+assert parser_text is not None
 
 expected_evidence = [
     ExpectedEvidence(
@@ -86,10 +87,12 @@ doc_id = expected_evidence[0].document_id
 query = "是否出现对人工智能有资源投入的信号？"
 
 
-parser_supports = []
+parser_expected_evidence = []
 
 
 for evidence in expected_evidence:
+    parser_supports = []
+
     for support in evidence.supports:
         parser_position = project_evidence_span(
             reference_text=reference_text,
@@ -115,6 +118,15 @@ for evidence in expected_evidence:
             "Mapping failed: ",
             evidence,
         )
+        continue
+
+    parser_expected_evidence.append(
+        ExpectedEvidence(
+            document_id=doc_id,
+            text=parser_text,
+            supports=parser_supports,
+        )
+    )
 
 
 reference_chunks = split_into_chunks(
@@ -129,3 +141,8 @@ parser_chunks = split_into_chunks(
 )
 
 
+print(len(reference_chunks))
+print(len(parser_chunks))
+
+print(len(expected_evidence))
+print(len(parser_expected_evidence))
