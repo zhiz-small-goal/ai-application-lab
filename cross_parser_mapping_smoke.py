@@ -84,6 +84,8 @@ expected_evidence = [
 
 
 for expected in expected_evidence:
+    parser_supports = []
+
     for support in expected.supports:
 
         parser_position = project_evidence_span(
@@ -94,19 +96,26 @@ for expected in expected_evidence:
         )
 
         if parser_position is None:
-            print(
-                expected.text,
-                "Mapping faild\n"
-            )
             continue
 
         parser_start, parser_end = parser_position
 
-        parser_evidence = parser_text[parser_start:parser_end]
+        parser_supports.append(
+            EvidenceSupport(
+                start=parser_start,
+                end=parser_end,
+            )
+        )
 
+    if not parser_supports:
         print(
             expected.text,
-            "->",
-            parser_position,
-            repr(parser_evidence)
+            "Mapping failed",
         )
+        continue
+
+    print(
+        expected.text,
+        "->",
+        parser_supports,
+    )
