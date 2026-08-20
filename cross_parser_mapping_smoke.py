@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from trafilatura import extract
 
 from evidence_mapping import project_evidence_span
+from models import EvidenceSupport, ExpectedEvidence
 
 
 html = Path(
@@ -30,49 +31,82 @@ parser_text = extract(
 )
 
 
-evidences = [
-    "湖南银行2025人工智能管理平台研发服务项目",
-    "公开招标采购",
-    "项目预算：60万元",
-    "供应商参与投标",
-]
-
-
 expected_evidence = [
-    ("湖南银行2025人工智能管理平台研发服务项目", 3202, 3224),
-    ("公开招标采购", 3299, 3305),
-    ("供应商参与投标", 3316, 3323),
-    ("项目预算：60万元", 3385, 3394),
+    ExpectedEvidence(
+        document_id="doc-001",
+        text="湖南银行2025人工智能管理平台研发服务项目",
+        supports=[
+            EvidenceSupport(
+                start=3202,
+                end=3224,
+            ),
+            EvidenceSupport(
+                start=3274,
+                end=3296,
+            ),
+            EvidenceSupport(
+                start=3333,
+                end=3355,
+            ),
+        ],
+    ),
+    ExpectedEvidence(
+        document_id="doc-001",
+        text="公开招标采购",
+        supports=[
+            EvidenceSupport(
+                start=3299,
+                end=3305,
+            )
+        ]
+    ),
+    ExpectedEvidence(
+        document_id="doc-001",
+        text="供应商参与投标",
+        supports=[
+            EvidenceSupport(
+                start=3316,
+                end=3323,
+            )
+        ]
+    ),
+    ExpectedEvidence(
+        document_id="doc-001",
+        text="项目预算：60万元",
+        supports=[
+            EvidenceSupport(
+                start=3385,
+                end=3394,
+            )
+        ]
+    ),
 ]
 
 
-reference_position = []
+for expected in expected_evidence:
+    for support in expected.supports:
 
-
-
-
-for evidence_text, reference_start, reference_end in expected_evidence:
-    parser_position = project_evidence_span(
-        reference_text=reference_text,
-        reference_start=reference_start,
-        reference_end=reference_end,
-        parser_text=parser_text,
-    )
-
-    if parser_position is None:
-        print(
-            evidence_text,
-            "Mapping faild\n"
+        parser_position = project_evidence_span(
+            reference_text=reference_text,
+            reference_start=support.start,
+            reference_end=support.end,
+            parser_text=parser_text,
         )
-        continue
 
-    parser_start, parser_end = parser_position
+        if parser_position is None:
+            print(
+                expected.text,
+                "Mapping faild\n"
+            )
+            continue
 
-    parser_evidence = parser_text[parser_start:parser_end]
+        parser_start, parser_end = parser_position
 
-    print(
-        evidence_text,
-        "->",
-        parser_position,
-        repr(parser_evidence)
-    )
+        parser_evidence = parser_text[parser_start:parser_end]
+
+        print(
+            expected.text,
+            "->",
+            parser_position,
+            repr(parser_evidence)
+        )
