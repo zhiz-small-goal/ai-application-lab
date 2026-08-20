@@ -40,25 +40,38 @@ evidences = [
 
 reference_position = []
 
-for evidence_text in evidences:
+evidence_text = evidences[0]
 
-    count = reference_text.count(evidence_text)
+search_start = 0
 
-    print(
-        "evidence: ",
+while True:
+    index = reference_text.find(
         evidence_text,
-        "count: ",
-        count
+        search_start,
     )
 
-    assert count == 1
+    if index == -1:
+        break
 
-    reference_start = reference_text.index(evidence_text)
-    reference_end = reference_start + len(evidence_text)
+    end = index + len(evidence_text)
 
-    print(reference_start, reference_end)
-    print(reference_text[reference_start:reference_end])
-    reference_position.append((reference_start, reference_end))
+    print(
+        "\nstart: ",
+        index,
+        "end: ",
+        end,
+    )
+
+    print(
+        repr(
+            reference_text[
+                max(0, index - 100):
+                min(len(reference_text), end + 150)
+            ]
+        )
+    )
+
+    search_start = index + 1
 
 for reference_offsets in reference_position:
     reference_start, reference_end = reference_offsets
