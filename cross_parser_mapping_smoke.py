@@ -38,40 +38,21 @@ evidences = [
 ]
 
 
+expected_evidence = [
+    ("湖南银行2025人工智能管理平台研发服务项目", 3202, 3224),
+    ("公开招标采购", 3299, 3305),
+    ("供应商参与投标", 3316, 3323),
+    ("项目预算：60万元", 3385, 3394),
+]
+
+
 reference_position = []
 
-evidence_text = evidences[0]
 
-search_start = 0
 
-while True:
-    index = reference_text.find(
-        evidence_text,
-        search_start,
-    )
-
-    if index == -1:
-        break
-
-    end = index + len(evidence_text)
-
-    print(
-        "\nstart: ",
-        index,
-        "end: ",
-        end,
-    )
-
-    print(
-        repr(
-            reference_text[
-                max(0, index - 100):
-                min(len(reference_text), end + 150)
-            ]
-        )
-    )
-
-    search_start = index + 1
+for evidence_text, start, end in expected_evidence:
+    assert reference_text[start:end] == evidence_text
+    
 
 for reference_offsets in reference_position:
     reference_start, reference_end = reference_offsets
