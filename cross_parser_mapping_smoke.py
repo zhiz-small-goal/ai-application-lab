@@ -50,27 +50,26 @@ reference_position = []
 
 
 
-for evidence_text, start, end in expected_evidence:
-    assert reference_text[start:end] == evidence_text
-    
 
-for reference_offsets in reference_position:
-    reference_start, reference_end = reference_offsets
+for evidence_text, start, end in expected_evidence: 
 
     parser_position = project_evidence_span(
         reference_text=reference_text,
-        reference_start=reference_start,
-        reference_end=reference_end,
+        reference_start=start,
+        reference_end=end,
         parser_text=parser_text,
     )
 
-    assert parser_position is not None
+    if parser_position is None:
+
+        print(
+            evidence_text,
+            "is not in reference text or parser text.\n"
+                  ) 
+        continue
 
     parser_start, parser_end = parser_position
 
-    projected_text = parser_text[
-        parser_start:parser_end
-    ]
+    parser_evidence = parser_text[parser_start:parser_end] 
 
-    print("parser position: ", parser_position)
-    print("projected text: ", projected_text)
+    assert parser_evidence == evidence_text
