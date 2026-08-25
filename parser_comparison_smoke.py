@@ -100,6 +100,62 @@ def display_ranked_chunks(
         print(chunk.text[:200])
 
 
+def calculate_text_compression_ratio(
+        original_text: str,
+        compressed_text: str,
+) -> float:
+    """
+    Calculate text compression ratio.
+
+    Measures how much the parser reduces the original text size.
+
+    A smaller ratio means the parsed text contains less content
+    compared with the original representation.
+
+    Args:
+        original_text:
+            Reference text before compression.
+
+        compressed_text:
+            Parser output text.
+
+    Returns:
+        compressed_text_length / original_text_length
+    """
+
+    if not original_text:
+        return 0.0
+
+    return len(compressed_text) / len(original_text)
+
+
+def calculate_context_size(
+        results: list[dict],
+        top_k: int,
+) -> int:
+    """
+    Calculate total character size of retrieved chunks.
+
+    This approximates the amount of context sent to LLM
+    after retrieval.
+
+    Args:
+        results:
+            Ranked chunks returned by rerank_chunks().
+
+        top_k:
+            Number of chunks selected.
+
+    Returns:
+        Total characters in selected chunks.
+    """
+
+    return sum(
+        len(item["chunk"].text)
+        for item in results[:top_k]
+    )
+
+
 html = Path("evaluation_samples/hunan_ai_platform_2025.html").read_text(
     encoding="utf-8"
 )
@@ -252,6 +308,15 @@ parser_results = rerank_chunks(
 )
 
 
+print(
+    "Parser compression ratio:",
+    calculate_text_compression_ratio(
+        reference_text,
+        parser_text,
+    )
+)
+
+
 for top_k in [3, 5, 7]:
     reference_hit = calculate_evidence_recall(
         results=reference_results,
@@ -265,9 +330,24 @@ for top_k in [3, 5, 7]:
         top_k=top_k,
     )
 
+    reference_context_size = calculate_context_size(
+        results=reference_results,
+        top_k=top_k,
+    )
+
+    parser_context_size = calculate_context_size(
+        results=parser_results,
+        top_k=top_k,
+    )
+
     print(
         "\nTop-K:",
         top_k,
+        "\nReference context size: ",
+        reference_context_size,
+
+        "\nParser context size: ",
+        parser_context_size,
         "\nReference_Top_recall@k: ",
         reference_hit,
         "\nParser_Top_recall@K: ",
@@ -275,8 +355,8 @@ for top_k in [3, 5, 7]:
     )
 
     print("\n")
-    display_ranked_chunks(results=reference_results)
-    display_ranked_chunks(results=parser_results)
+    display_ranked_chunks(results=reference_results[:top_k])
+    display_ranked_chunks(results=parser_results[:top_k])
     print("\n\n")
 
 
