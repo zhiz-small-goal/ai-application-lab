@@ -15,21 +15,26 @@ from models import(
 )
 
 
-def evaluate_chunks(
-        chunks: Chunk,
-        query: str
+def rerank_chunks(
+        chunks: list[Chunk],
+        query: str,
+        reranker: FlagReranker,
 ) -> list[dict]:
-    """Return evaluate result for chunks."""
+    """
+    Rank chunks by relevance score for viven query.
+
+    Args:
+        chunks: Candidate chunks to be ranked.
+        query: Query used to calculate chunk revlevance.
+
+    Returns:
+        A ranked list of chnks with their relevance scores.
+    """
 
     pairs = [
         [query, chunk.text]
         for chunk in chunks
     ]
-
-    reranker = FlagReranker(
-        "BAAI/bge-reranker-v2-m3",
-        use_fp16=False,
-    )
 
     scores = reranker.compute_score(
         pairs,
@@ -187,15 +192,23 @@ parser_chunks = split_into_chunks(
 )
 
 
-reference_results = evaluate_chunks(
-    chunks=reference_chunks,
-    query=query,
+reranker = FlagReranker(
+    "BAAI/bge-reranker-v2-m3",
+    use_fp16=False,
 )
 
 
-parser_results = evaluate_chunks(
+reference_results = rerank_chunks(
+    chunks=reference_chunks,
+    query=query,
+    reranker=reranker,
+)
+
+
+parser_results = rerank_chunks(
     chunks=parser_chunks,
-    query=query
+    query=query,
+    reranker=reranker,
 )
 
 
