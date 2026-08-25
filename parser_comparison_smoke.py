@@ -60,6 +60,46 @@ def rerank_chunks(
     return results
     
 
+def display_ranked_chunks(
+        results: list[dict]
+):
+    """
+    Display ranked retrieval results for inspection.
+
+    This function is used for debugging and experiment analysis.
+    It shows the ranking order, reranker score, chunk provenance,
+    and a short preview of chunk content.
+
+    The output helps compare how different parsers affect:
+    - retrieved chunk ranking;
+    - relevance score distribution;
+    - retrieved context quality.
+
+    Args:
+        results:
+            Ranked chunks returned by rerank_chunks().
+            Each item contains:
+            - chunk: original Chunk object with provenance information.
+            - score: reranker relevance score.
+    """
+
+    for rank, item in enumerate(
+        results,
+        start=1,
+    ):
+        chunk = item["chunk"]
+        score = item["score"]
+
+        print("=" * 50)
+        print(f"Rank: {rank}")
+        print(f"Score: {score:6f}")
+        print(f"Start: {chunk.start}")
+        print(f"End: {chunk.end}")
+
+        print("\nText preview: ")
+        print(chunk.text[:200])
+
+
 html = Path("evaluation_samples/hunan_ai_platform_2025.html").read_text(
     encoding="utf-8"
 )
@@ -233,5 +273,10 @@ for top_k in [3, 5, 7]:
         "\nParser_Top_recall@K: ",
         parser_hit,
     )
+
+    print("\n")
+    display_ranked_chunks(results=reference_results)
+    display_ranked_chunks(results=parser_results)
+    print("\n\n")
 
 
