@@ -2,12 +2,58 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 from trafilatura import extract
 
+from FlagEmbedding import FlagReranker
+
 from evidence_mapping import project_evidence_span
-from chunking import split_into_chunks
+from chunking import split_into_chunks, calculate_evidence_recall
 
 
-from models import EvidenceSupport, ExpectedEvidence
+from models import(
+    EvidenceSupport,
+    ExpectedEvidence,
+    Chunk,
+)
 
+
+def evaluate_chunks(
+        chunks: Chunk,
+        query: str
+) -> list[dict]:
+    """Return evaluate result for chunks."""
+
+    pairs = [
+        [query, chunk.text]
+        for chunk in chunks
+    ]
+
+    reranker = FlagReranker(
+        "BAAI/bge-reranker-v2-m3",
+        use_fp16=False,
+    )
+
+    scores = reranker.compute_score(
+        pairs,
+        normalize=True,
+    )
+
+    results = [
+        {
+            "chunk": chunk,
+            "score": score,
+        }
+        for chunk, score in zip(
+            chunks,
+            scores,
+        )
+    ]
+
+    results.sort(
+        key=lambda item: float(item["score"]),
+        reverse=True,
+    )
+
+    return results
+    
 
 html = Path("evaluation_samples/hunan_ai_platform_2025.html").read_text(
     encoding="utf-8"
@@ -87,7 +133,7 @@ doc_id = expected_evidence[0].document_id
 query = "是否出现对人工智能有资源投入的信号？"
 
 
-parser_expected_evidence = []
+parser_project_evidence = []
 
 
 for evidence in expected_evidence:
@@ -120,7 +166,7 @@ for evidence in expected_evidence:
         )
         continue
 
-    parser_expected_evidence.append(
+    parser_project_evidence.append(
         ExpectedEvidence(
             document_id=doc_id,
             text=evidence.text,
@@ -141,8 +187,38 @@ parser_chunks = split_into_chunks(
 )
 
 
-print(len(reference_chunks))
-print(len(parser_chunks))
+reference_results = evaluate_chunks(
+    chunks=reference_chunks,
+    query=query,
+)
 
-print(len(expected_evidence))
-print(len(parser_expected_evidence))
+
+parser_results = evaluate_chunks(
+    chunks=parser_chunks,
+    query=query
+)
+
+
+for top_k in [3, 5, 7]:
+    reference_hit = calculate_evidence_recall(
+        results=reference_results,
+        expected_evidence=expected_evidence,
+        top_k=top_k
+    )
+
+    parser_hit = calculate_evidence_recall(
+        results=parser_results,
+        expected_evidence=parser_project_evidence,
+        top_k=top_k,
+    )
+
+    print(
+        "\nTop-K:",
+        top_k,
+        "\nReference_Top_recall@k: ",
+        reference_hit,
+        "\nParser_Top_recall@K: ",
+        parser_hit,
+    )
+
+
