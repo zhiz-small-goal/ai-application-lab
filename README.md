@@ -26,13 +26,13 @@ BeautifulSoup 作为对照基线，Trafilatura 作为候选方案与之对比。
 - 第六步让 GPT 设计 4 个隔离变量测试，并查阅 Trafilatura 官方源码/实现规则。
 - 第七步得出结论：Trafilatura 默认删除 <aside>。
 - 第八步再检查少量真实网页，并没有发现关键 Evidence 落入 <aside>.
-- 现在 Trafilatura 的文本压缩收益高，并且测试中暂时没有发现大量关键 Evidence 落入 <aside>, 所以暂时接收 Trafilatura 默认删除 <aside>.
+- 现在 Trafilatura 的文本压缩收益高，并且测试中暂时没有发现大量关键 Evidence 落入 <aside>, 所以暂时接受 Trafilatura 默认删除 <aside>.
 
 ## 4.项目边界与已知缺陷。
 - 目前 Trafilatura 默认删除 <aside>.
 - 当前 Chunk 的算法是 固定长度 + 200 字符 overlap，还没跟其他 Chunking 策略比较过。
 - 目前主要是处理网页数据。
-- 现在的 parser_recall 只针对 Parser 成功保留的 Evidence 进行计算，所以不能单独反应 Parser 删除 Evidence 带来的端到端损失，因为看不见已经删掉的 Evidence。
+- 现在的 parser_recall 只针对 Parser 成功保留的 Evidence 进行计算，所以不能单独反映 Parser 删除 Evidence 带来的端到端损失，因为看不见已经删掉的 Evidence。
 
 ## 5.如何运行
 ### 5.1 环境
