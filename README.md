@@ -45,7 +45,7 @@ py -m venv .venv
 
 安装项目依赖：`pip install -r requirements.txt`
 
-- 项目使用 `BAAI/bge-reranker-v2-m3` 作为当前 Reranker。首次运行时，FlagEmbdding 会下载对应模型，因此需要能够访问模型下载源。
+- 项目使用 `BAAI/bge-reranker-v2-m3` 作为当前 Reranker。首次运行时，FlagEmbedding 会下载对应模型，因此需要能够访问模型下载源。
 
 ### 5.2 Evaluation 输入
 - 主要 Evaluation 使用两类输入：
@@ -73,7 +73,7 @@ Frozen HTML
 -> Trafilatura Parser Text
 -> Expected Evidence Mapping
 -> Chunking
--> Query + Chuk
+-> Query + Chunk
 -> Reranker
 -> Top-K
 -> Evaluation
@@ -86,4 +86,4 @@ Frozen HTML
   - `parser_compression_ratio`
 
 - Evaluation 完成后结果写入：`results/evaluation_results.csv`
-- 当前主要通过 Evidence Perservation、Recall@K和 Compression Ratio 判断 Parser 是否在减少网页文本的同时保留完成判断所需要的关键 Evidence。
+- 当前主要通过 Evidence Preservation、Recall@K和 Compression Ratio 判断 Parser 是否在减少网页文本的同时保留完成判断所需要的关键 Evidence。
