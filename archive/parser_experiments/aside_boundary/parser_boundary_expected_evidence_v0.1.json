@@ -1,0 +1,76 @@
+{
+  "schema_version": "0.1",
+  "created_date": "2026-09-01",
+  "query": "是否出现对人工智能有资源投入的信号？",
+  "dataset_notes": [
+    "本数据集只用于隔离 Parser Preservation Failure 的位置与 HTML 结构因素。",
+    "四个样本使用完全相同的 Evidence 文本和相同 filler 内容。",
+    "唯一主动变化的两个变量是 Evidence 容器标签（section / aside）与位置（middle / late）。",
+    "middle：Evidence 放在 6 个 filler section 的第 3 个之后；late：放在第 5 个之后，后面仍保留 1 个 filler section。",
+    "Evidence 块内部结构保持一致：h2 + p + strong。",
+    "supports(start/end) 不写入本文件；应由本地 reference_text 自动定位生成。",
+    "如果 Evidence 在 reference_text 中找不到，应先判定为 dataset/source mismatch。"
+  ],
+  "samples": [
+    {
+      "sample_id": "B01",
+      "document_id": "boundary-section-middle",
+      "file_name": "boundary_section_middle.html",
+      "sample_type": "synthetic_boundary",
+      "sample_role": "section_middle_control",
+      "source_url": null,
+      "expected_evidence": [
+        {
+          "evidence_id": "B01-E01",
+          "text": "平台只提供辅助信息，不自动生成最终临床诊断结论。",
+          "why_zh": "控制样本：Evidence 位于正文中段的 section 中，用于检查普通正文结构下是否保留。"
+        }
+      ]
+    },
+    {
+      "sample_id": "B02",
+      "document_id": "boundary-section-late",
+      "file_name": "boundary_section_late.html",
+      "sample_type": "synthetic_boundary",
+      "sample_role": "section_late_position_test",
+      "source_url": null,
+      "expected_evidence": [
+        {
+          "evidence_id": "B02-E01",
+          "text": "平台只提供辅助信息，不自动生成最终临床诊断结论。",
+          "why_zh": "位置测试：Evidence 位于正文后段的 section 中，用于隔离“靠后位置”因素。"
+        }
+      ]
+    },
+    {
+      "sample_id": "B03",
+      "document_id": "boundary-aside-middle",
+      "file_name": "boundary_aside_middle.html",
+      "sample_type": "synthetic_boundary",
+      "sample_role": "aside_middle_structure_test",
+      "source_url": null,
+      "expected_evidence": [
+        {
+          "evidence_id": "B03-E01",
+          "text": "平台只提供辅助信息，不自动生成最终临床诊断结论。",
+          "why_zh": "结构测试：Evidence 位于正文中段的 aside 中，用于隔离 aside 结构因素。"
+        }
+      ]
+    },
+    {
+      "sample_id": "B04",
+      "document_id": "boundary-aside-late",
+      "file_name": "boundary_aside_late.html",
+      "sample_type": "synthetic_boundary",
+      "sample_role": "aside_late_interaction_test",
+      "source_url": null,
+      "expected_evidence": [
+        {
+          "evidence_id": "B04-E01",
+          "text": "平台只提供辅助信息，不自动生成最终临床诊断结论。",
+          "why_zh": "组合测试：Evidence 位于正文后段的 aside 中，用于检查位置与 aside 是否共同造成删除。"
+        }
+      ]
+    }
+  ]
+}

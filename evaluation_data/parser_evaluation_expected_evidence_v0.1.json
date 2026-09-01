@@ -1,0 +1,219 @@
+{
+  "schema_version": "0.1",
+  "created_date": "2026-08-25",
+  "query": "是否出现对人工智能有资源投入的信号？",
+  "dataset_notes": [
+    "真实网页 Evidence 的 text 保持网页原文，用于在本地 frozen HTML 生成的 reference_text 中定位。",
+    "why_zh 只用于人工审查，不参与 exact match。",
+    "supports(start/end) 不写入本文件；应由本地 reference_text 自动定位生成。",
+    "如果某条 text 在本地 reference_text 中找不到，应先判定为 dataset/source mismatch，不应直接算作 Parser mapping failure。",
+    "同一 Evidence 如果在 reference_text 中出现多次，应生成多个 EvidenceSupport。"
+  ],
+  "samples": [
+    {
+      "sample_id": "S01",
+      "document_id": "hunan-ai-platform-2025",
+      "file_name": "hunan_ai_platform_2025.html",
+      "sample_type": "real",
+      "sample_role": "baseline_evidence_concentrated",
+      "source_url": "https://www.hunan-bank.com/96599/2025-11/21/article_2025112118011847442.shtml?sessionid=",
+      "expected_evidence": [
+        {
+          "evidence_id": "S01-E01",
+          "text": "湖南银行2025人工智能管理平台研发服务项目",
+          "why_zh": "明确的 AI 项目名称，证明公司存在具体人工智能项目投入。"
+        },
+        {
+          "evidence_id": "S01-E02",
+          "text": "公开招标采购",
+          "why_zh": "说明项目通过正式采购方式获取外部供给。"
+        },
+        {
+          "evidence_id": "S01-E03",
+          "text": "供应商参与投标",
+          "why_zh": "说明存在明确的外部供应商参与路径。"
+        },
+        {
+          "evidence_id": "S01-E04",
+          "text": "项目预算：60万元",
+          "why_zh": "提供可量化的资源投入信号。"
+        }
+      ]
+    },
+    {
+      "sample_id": "S02",
+      "document_id": "pingan-medical-llm-2026",
+      "file_name": "pingan_medical_llm_2026.html",
+      "sample_type": "real",
+      "sample_role": "high_evidence_density",
+      "source_url": "https://group.pingan.com/media/perspectives/2026/pingans-medical-llm-demonstrates-world-class-clinical-reasoning-on-healthbench-hard.html",
+      "expected_evidence": [
+        {
+          "evidence_id": "S02-E01",
+          "text": "Ping An Medical LLM 3.5",
+          "why_zh": "明确存在已开发的医疗大语言模型。"
+        },
+        {
+          "evidence_id": "S02-E02",
+          "text": "1,500 primary healthcare institutions",
+          "why_zh": "模型能力已经进入大规模真实医疗机构场景。"
+        },
+        {
+          "evidence_id": "S02-E03",
+          "text": "85% of AI-generated content",
+          "why_zh": "提供 AI 生成内容被医生实际采用的业务结果信号。"
+        }
+      ]
+    },
+    {
+      "sample_id": "S03",
+      "document_id": "pingan-1h-results-2026",
+      "file_name": "pingan_1h_results_2026.html",
+      "sample_type": "real",
+      "sample_role": "distributed_evidence_mixed_topics",
+      "source_url": "https://group.pingan.com/media/news/2026/pingan-1h-26-results.html",
+      "expected_evidence": [
+        {
+          "evidence_id": "S03-E01",
+          "text": "average daily token consumption exceeded 120 billion",
+          "why_zh": "提供集团级 AI 使用规模和计算资源投入信号。"
+        },
+        {
+          "evidence_id": "S03-E02",
+          "text": "AI Doctor was used by over 9.7 million persons",
+          "why_zh": "AI 已进入大规模真实医疗业务使用。"
+        },
+        {
+          "evidence_id": "S03-E03",
+          "text": "AI agents helped realize RMB57,313 million in sales",
+          "why_zh": "AI Agent 与可量化业务结果产生联系。"
+        }
+      ]
+    },
+    {
+      "sample_id": "S04",
+      "document_id": "caict-llm-procurement-2026",
+      "file_name": "caict_llm_procurement_2026.html",
+      "sample_type": "real",
+      "sample_role": "structured_procurement_evidence",
+      "source_url": "https://www.ccgp.gov.cn/cggg/zygg/gkzb/202606/t20260626_26821440.htm",
+      "expected_evidence": [
+        {
+          "evidence_id": "S04-E01",
+          "text": "预算金额：165.000000 万元（人民币）",
+          "why_zh": "明确且可量化的项目资源投入。"
+        },
+        {
+          "evidence_id": "S04-E02",
+          "text": "跨模态检索模块开发试制",
+          "why_zh": "明确采购/研发的 AI 检索模块。"
+        },
+        {
+          "evidence_id": "S04-E03",
+          "text": "大模型访问控制系统",
+          "why_zh": "明确采购大模型相关系统能力，且 Evidence 位于结构化采购内容中。"
+        }
+      ]
+    },
+    {
+      "sample_id": "S05",
+      "document_id": "deepworks-2026",
+      "file_name": "deepworks_2026.html",
+      "sample_type": "real",
+      "sample_role": "high_boilerplate_noise",
+      "source_url": "https://www.ncsti.gov.cn/kjdt/scyq/zgckxc/zgcdt/202607/t20260723_251800.html",
+      "expected_evidence": [
+        {
+          "evidence_id": "S05-E01",
+          "text": "正式开放新一代DeepWorks企业智能体平台公开测试",
+          "why_zh": "明确企业智能体平台已经进入公开测试阶段。"
+        },
+        {
+          "evidence_id": "S05-E02",
+          "text": "服务400余家大型头部企业",
+          "why_zh": "提供真实企业客户实践规模信号。"
+        },
+        {
+          "evidence_id": "S05-E03",
+          "text": "2000余项Skills组合",
+          "why_zh": "提供平台已经形成较大规模企业技能能力的信号。"
+        },
+        {
+          "evidence_id": "S05-E04",
+          "text": "共建产业AI平台",
+          "why_zh": "提供企业与外部主体共同建设 AI 平台的现实投入/合作信号。"
+        }
+      ]
+    },
+    {
+      "sample_id": "C01",
+      "document_id": "challenge-distributed-evidence",
+      "file_name": "challenge_e01_distributed_evidence.html",
+      "sample_type": "synthetic_challenge",
+      "sample_role": "long_distance_distributed_evidence",
+      "source_url": null,
+      "expected_evidence": [
+        {
+          "evidence_id": "C01-E01",
+          "text": "公司已启动“智能质检与工艺异常分析平台”建设项目，计划将视觉模型和大语言模型接入实际生产流程。",
+          "why_zh": "开头附近的 AI 项目与真实生产流程 Evidence。"
+        },
+        {
+          "evidence_id": "C01-E02",
+          "text": "本项目预算为 180 万元，其中模型开发与系统集成将通过外部采购方式实施。",
+          "why_zh": "末尾附近的预算和外部采购 Evidence。"
+        },
+        {
+          "evidence_id": "C01-E03",
+          "text": "验收目标之一是将重点缺陷复核平均耗时降低 40%，并保留人工最终确认。",
+          "why_zh": "末尾附近的可量化业务结果与 Human Review Evidence。"
+        }
+      ]
+    },
+    {
+      "sample_id": "C02",
+      "document_id": "challenge-structured-evidence",
+      "file_name": "challenge_e02_structured_evidence.html",
+      "sample_type": "synthetic_challenge",
+      "sample_role": "non_prose_structured_evidence",
+      "source_url": null,
+      "expected_evidence": [
+        {
+          "evidence_id": "C02-E01",
+          "text": "某区域医疗集团 AI 临床辅助平台采购项目",
+          "why_zh": "标题中的项目 Evidence。"
+        },
+        {
+          "evidence_id": "C02-E02",
+          "text": "项目预算：320 万元",
+          "why_zh": "定义列表中的预算 Evidence。"
+        },
+        {
+          "evidence_id": "C02-E03",
+          "text": "公开招标采购",
+          "why_zh": "定义列表中的采购方式 Evidence。"
+        },
+        {
+          "evidence_id": "C02-E04",
+          "text": "供应商需提供临床文本检索、医学知识问答和病历摘要生成能力。",
+          "why_zh": "列表中的具体 AI 能力采购 Evidence。"
+        },
+        {
+          "evidence_id": "C02-E05",
+          "text": "系统需接入院内既有电子病历与知识库，并保留结果来源引用。",
+          "why_zh": "列表中的系统集成与 provenance 要求。"
+        },
+        {
+          "evidence_id": "C02-E06",
+          "text": "试点科室资料检索平均耗时降低 30%",
+          "why_zh": "表格中的可量化验收结果 Evidence。"
+        },
+        {
+          "evidence_id": "C02-E07",
+          "text": "平台只提供辅助信息，不自动生成最终临床诊断结论。",
+          "why_zh": "aside 中的高风险人工决策边界。"
+        }
+      ]
+    }
+  ]
+}

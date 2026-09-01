@@ -95,7 +95,7 @@ samples_dir = PROJECT_ROOT / "evaluation_samples"
 json_path = (
     PROJECT_ROOT
     / "evaluation_data"
-    / "parser_evaluation_expected_evidence.v0.1.json"
+    / "parser_evaluation_expected_evidence_v0.1.json"
 )
 
 
