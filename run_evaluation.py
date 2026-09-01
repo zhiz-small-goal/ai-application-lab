@@ -87,10 +87,16 @@ def calculate_text_compression_ratio(
     return len(compressed_text) / len(original_text)
 
 
-samples_dir = Path("e:\downld\parser_boundary_tests_v0.1")
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+samples_dir = PROJECT_ROOT / "evaluation_samples"
 
 
-json_path = Path("e:\downld\parser_boundary_tests_v0.1\parser_boundary_expected_evidence_v0.1.json")
+json_path = (
+    PROJECT_ROOT
+    / "evaluation_data"
+    / "parser_evaluation_expected_evidence.v0.1.json"
+)
 
 
 with json_path.open(
@@ -107,7 +113,7 @@ reranker = FlagReranker(
     use_fp16=False,
 )
 
-query = "是否有 AI 资源投入？"
+query = dataset["query"]
 
 
 evaluation_results = []
@@ -289,8 +295,18 @@ for sample in samples:
 
 print(len(evaluation_results))
 
-with open(
-    "evaluation_results.csv",
+results_dir = PROJECT_ROOT / "results"
+results_dir.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+output_path = (
+    results_dir
+    / "evaluation_results.csv"
+)
+
+with output_path.open(
     "w",
     newline="",
     encoding="utf-8-sig"
