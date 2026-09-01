@@ -228,7 +228,7 @@ expected_evidence = [
 ]
 
 
-doc_id = expected_evidence[0].document_id
+document_id = expected_evidence[0].document_id
 
 
 query = "是否出现对人工智能有资源投入的信号？"
@@ -269,7 +269,7 @@ for evidence in expected_evidence:
 
     parser_project_evidence.append(
         ExpectedEvidence(
-            document_id=doc_id,
+            document_id=document_id,
             text=evidence.text,
             supports=parser_supports,
         )
@@ -277,13 +277,13 @@ for evidence in expected_evidence:
 
 
 reference_chunks = split_into_chunks(
-    document_id=doc_id,
+    document_id=document_id,
     text=reference_text,
 )
 
 
 parser_chunks = split_into_chunks(
-    document_id=doc_id,
+    document_id=document_id,
     text=parser_text,
 )
 
