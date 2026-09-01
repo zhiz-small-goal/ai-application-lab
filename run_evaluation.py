@@ -175,24 +175,56 @@ for sample in samples:
             kipped_evidence_start = reference_text.find(evidence_text)
             print("\n", normalized_evidence, kipped_evidence_start, document_id, "\n")
 
-        normalized_reference_start = normalized_reference_text.find(normalized_evidence)
-        normalized_reference_end = normalized_reference_start + len(normalized_evidence)
+        start = 0
 
-        reference_start = normalized_reference_position[
-            normalized_reference_start
-        ]
+        while True:
+            index = normalized_reference_text.find(normalized_evidence, start)
 
-        reference_end = normalized_reference_position[
-            normalized_reference_end - 1
-        ] + 1
-        
+            if index == -1:
+                break
 
-        reference_evidence_supports.append(
-            EvidenceSupport(
-                start=reference_start,
-                end=reference_end,
+            
+            start = index + 1
+
+            normalized_reference_start = index
+
+            normalized_reference_end = normalized_reference_start + len(normalized_evidence)
+
+            reference_start = normalized_reference_position[
+                normalized_reference_start
+            ]
+
+            reference_end = normalized_reference_position[
+                normalized_reference_end - 1
+            ] + 1
+            
+
+            reference_evidence_supports.append(
+                EvidenceSupport(
+                    start=reference_start,
+                    end=reference_end,
+                )
             )
-        )
+
+            parser_position = project_evidence_span(
+                reference_text=reference_text,
+                reference_end=reference_end,
+                reference_start=reference_start,
+                parser_text=parser_text,
+            )
+
+            if parser_position is None:
+                print("Mapping Failed")
+                continue
+
+            parser_start, parser_end = parser_position
+
+            parser_evidence_supports.append(
+                EvidenceSupport(
+                    start=parser_start,
+                    end=parser_end,
+                )
+            )
 
         reference_evidence.append(
             ExpectedEvidence(
@@ -202,33 +234,16 @@ for sample in samples:
             )
         )
 
-        parser_position = project_evidence_span(
-            reference_text=reference_text,
-            reference_end=reference_end,
-            reference_start=reference_start,
-            parser_text=parser_text,
-        )
-
-        if parser_position is None:
-            print("Mapping Failed")
-            continue
-
-        parser_start, parser_end = parser_position
-
-        parser_evidence_supports.append(
-            EvidenceSupport(
-                start=parser_start,
-                end=parser_end,
+        if parser_evidence_supports:
+            parser_project_evidence.append(
+                ExpectedEvidence(
+                    document_id=document_id,
+                    text=evidence_text,
+                    supports=parser_evidence_supports,
+                )
             )
-        )
+            
 
-        parser_project_evidence.append(
-            ExpectedEvidence(
-                document_id=document_id,
-                text=evidence_text,
-                supports=parser_evidence_supports,
-            )
-        )
 
     print("\nKipped evidence: ", kipped_evidence)
 
