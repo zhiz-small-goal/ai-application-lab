@@ -1,4 +1,4 @@
-from web_dataset_validation import validate_evidence_in_reference 
+from dataset_validation import validate_evidence_in_reference 
 
 from models import (
     ExpectedEvidence,

@@ -104,3 +104,14 @@ class DatasetValidationResult(BaseModel):
     status: bool
     mapped_evidence: list[ExpectedEvidence]
     reason: str | None
+
+
+class MissingEvidenceSupport(BaseModel):
+    document_id: str
+    evidence_text: str
+    support: EvidenceSupport
+
+
+class ParserPreservationResult(BaseModel):
+    mapped_evidence: list[ExpectedEvidence]
+    missing_support: list[MissingEvidenceSupport]

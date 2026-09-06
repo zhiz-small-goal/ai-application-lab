@@ -2,9 +2,13 @@ from models import (
     DatasetValidationResult,
     ExpectedEvidence,
     EvidenceSupport,
+    MissingEvidenceSupport,
+    ParserPreservationResult,
 )
 
 from evidence_mapping import normalize_text_with_position_map
+
+from evidence_mapping  import project_evidence_span
 
 
 def validate_evidence_in_reference(
@@ -81,4 +85,75 @@ def validate_evidence_in_reference(
     )
 
 
+def evaluate_parser_preservation(
+        reference_text: str,
+        parser_text: str,
+        reference_evidence: list[ExpectedEvidence]
+) -> ParserPreservationResult:
+    """Evaluate and map expected evidence against reference evidence with reference text."""
 
+    parser_mapped_evidence = []
+
+    parser_missing_supports = []
+
+    for evidence in reference_evidence:
+        parser_supports = []
+
+        evidence_text = evidence.text
+        document_id = evidence.document_id
+
+        for support in evidence.supports:
+            reference_start = support.start
+            reference_end = support.end
+
+            parser_position = project_evidence_span(
+                reference_text=reference_text,
+                reference_start=reference_start,
+                reference_end=reference_end,
+                parser_text=parser_text,
+            )
+
+            if parser_position is None:
+                parser_missing_supports.append(
+                    MissingEvidenceSupport(
+                        document_id=document_id,
+                        evidence_text=evidence_text,
+                        support=EvidenceSupport(
+                            start=reference_start,
+                            end=reference_end
+                        )
+                    )
+                )
+                continue
+
+            parser_start, parser_end = parser_position
+
+            parser_supports.append(
+                EvidenceSupport(
+                    start=parser_start,
+                    end=parser_end,
+                )
+            )
+
+        parser_mapped_evidence.append(
+            ExpectedEvidence(
+                document_id=document_id,
+                text=evidence_text,
+                supports=parser_supports,
+            )
+        )
+
+    return ParserPreservationResult(
+        mapped_evidence=parser_mapped_evidence,
+        missing_support=parser_missing_supports
+    )
+
+        
+
+
+        
+
+
+
+
+    
