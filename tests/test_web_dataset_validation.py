@@ -7,7 +7,7 @@ from models import (
 )
 
 
-def test_get_source_mismatch_returns_checked_result():
+def test_validate_evidence_in_reference_returns_valid_result_when_all_evidence_is_found():
     expected_evidence_texts = [
         "nihao",
         "zhiz",
@@ -31,8 +31,8 @@ def test_get_source_mismatch_returns_checked_result():
                 text="zhiz",
                 supports=[
                     EvidenceSupport(
-                        start=7,
-                        end=11,
+                        start=8,
+                        end=12,
                     )
                 ]
             )
