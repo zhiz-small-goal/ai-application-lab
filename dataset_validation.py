@@ -90,7 +90,7 @@ def evaluate_parser_preservation(
         parser_text: str,
         reference_evidence: list[ExpectedEvidence]
 ) -> ParserPreservationResult:
-    """Evaluate and map expected evidence against reference evidence with reference text."""
+    """Project reference evidence supports into parser text and record preservation results."""
 
     parser_mapped_evidence = []
 
@@ -118,10 +118,7 @@ def evaluate_parser_preservation(
                     MissingEvidenceSupport(
                         document_id=document_id,
                         evidence_text=evidence_text,
-                        support=EvidenceSupport(
-                            start=reference_start,
-                            end=reference_end
-                        )
+                        support=support,
                     )
                 )
                 continue
@@ -135,17 +132,18 @@ def evaluate_parser_preservation(
                 )
             )
 
-        parser_mapped_evidence.append(
-            ExpectedEvidence(
-                document_id=document_id,
-                text=evidence_text,
-                supports=parser_supports,
+        if parser_supports:
+            parser_mapped_evidence.append(
+                ExpectedEvidence(
+                    document_id=document_id,
+                    text=evidence_text,
+                    supports=parser_supports,
+                )
             )
-        )
 
     return ParserPreservationResult(
         mapped_evidence=parser_mapped_evidence,
-        missing_support=parser_missing_supports
+        missing_supports=parser_missing_supports
     )
 
         

@@ -114,4 +114,4 @@ class MissingEvidenceSupport(BaseModel):
 
 class ParserPreservationResult(BaseModel):
     mapped_evidence: list[ExpectedEvidence]
-    missing_support: list[MissingEvidenceSupport]
+    missing_supports: list[MissingEvidenceSupport]
