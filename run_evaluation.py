@@ -297,6 +297,7 @@ for sample in samples:
 
         evaluation_results.append(
             {
+                "sample_id": sample["sample_id"],
                 "filename": document_id,
                 "top_K": top_k,
                 "expected_evidence_count": len(reference_evidence),
