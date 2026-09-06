@@ -8,9 +8,11 @@ from trafilatura import extract
 from FlagEmbedding import FlagReranker
 
 from evidence_mapping import project_evidence_span, normalize_text_with_position_map
+from dataset_validation import validate_evidence_in_reference, evaluate_parser_preservation
 from models import Chunk, EvidenceSupport, ExpectedEvidence
 
 from chunking import calculate_evidence_recall, split_into_chunks
+
 
 
 def rerank_chunks(
@@ -136,124 +138,32 @@ for sample in samples:
         strip=True,
     )
 
-    normalized_reference_text, normalized_reference_position = normalize_text_with_position_map(
-        text=reference_text
-    )
-
     parser_text = extract(sample_text)
-    normalized_parser, _ = normalize_text_with_position_map(parser_text)
 
     evidence_list = sample["expected_evidence"]
 
     document_id = sample["document_id"]
 
-    reference_evidence = []
-
-    parser_project_evidence = []
-
-    kipped_evidence = 0
-
-    parser_kipped_evidence = []
+    expected_evidence_texts = []
 
     for evidence in evidence_list:
+        expected_evidence_texts.append(evidence["text"])
 
-        reference_evidence_supports = []
-        parser_evidence_supports = []
+    validate_reference = validate_evidence_in_reference(
+    reference_text=reference_text,
+    document_id=document_id,
+    expected_evidence_texts=expected_evidence_texts,
+    )
 
-        evidence_text = evidence["text"]
+    reference_evidence = validate_reference.mapped_evidence
 
-        normalized_evidence, normalized_evidence_position = normalize_text_with_position_map(text=evidence_text)
+    evaluate_parser = evaluate_parser_preservation(
+        reference_text=reference_text,
+        parser_text=parser_text,
+        reference_evidence=reference_evidence
+    )
 
-        if normalized_evidence not in normalized_reference_text:
-            print("Expected Evidence is not in Reference text!",repr(evidence_text), repr(sample_file))
-            kipped_evidence += 1
-            continue
-
-        if normalized_evidence not in normalized_parser:
-            print("Evidence is not in parser text")
-            parser_kipped_evidence.append(normalized_evidence)
-            kipped_evidence_start = reference_text.find(evidence_text)
-            print("\n", normalized_evidence, kipped_evidence_start, document_id, "\n")
-
-        start = 0
-
-        while True:
-            index = normalized_reference_text.find(normalized_evidence, start)
-
-            if index == -1:
-                break
-
-            
-            start = index + 1
-
-            normalized_reference_start = index
-
-            normalized_reference_end = normalized_reference_start + len(normalized_evidence)
-
-            reference_start = normalized_reference_position[
-                normalized_reference_start
-            ]
-
-            reference_end = normalized_reference_position[
-                normalized_reference_end - 1
-            ] + 1
-            
-
-            reference_evidence_supports.append(
-                EvidenceSupport(
-                    start=reference_start,
-                    end=reference_end,
-                )
-            )
-
-            parser_position = project_evidence_span(
-                reference_text=reference_text,
-                reference_end=reference_end,
-                reference_start=reference_start,
-                parser_text=parser_text,
-            )
-
-            if parser_position is None:
-                print("Mapping Failed")
-                continue
-
-            parser_start, parser_end = parser_position
-
-            parser_evidence_supports.append(
-                EvidenceSupport(
-                    start=parser_start,
-                    end=parser_end,
-                )
-            )
-
-        reference_evidence.append(
-            ExpectedEvidence(
-                document_id=document_id,
-                text=evidence_text,
-                supports=reference_evidence_supports,
-            )
-        )
-
-        if parser_evidence_supports:
-            parser_project_evidence.append(
-                ExpectedEvidence(
-                    document_id=document_id,
-                    text=evidence_text,
-                    supports=parser_evidence_supports,
-                )
-            )
-            
-
-
-    print("\nKipped evidence: ", kipped_evidence)
-
-    if len(reference_evidence) == 0:
-        print("\nReference evidence is 0 range, document id is: ", document_id)
-        continue
-
-    if len(parser_project_evidence) == 0:
-        print("\nParser evidence is 0 range")
-        continue
+    parser_evidence = evaluate_parser.mapped_evidence
 
     reference_chunks = split_into_chunks(
         document_id=document_id,
@@ -278,17 +188,23 @@ for sample in samples:
     )
 
     for top_k in [3, 5, 7]:
-        reference_hit = calculate_evidence_recall(
-            results=reference_results,
-            expected_evidence=reference_evidence,
-            top_k=top_k,
-        )
+        if reference_evidence:
+            reference_hit = calculate_evidence_recall(
+                results=reference_results,
+                expected_evidence=reference_evidence,
+                top_k=top_k,
+            )
+        else:
+            reference_hit = "A/N"
 
-        parser_hit = calculate_evidence_recall(
-            results=parser_results,
-            expected_evidence=parser_project_evidence,
-            top_k=top_k,
-        )
+        if parser_evidence:
+            parser_hit = calculate_evidence_recall(
+                results=parser_results,
+                expected_evidence=parser_evidence,
+                top_k=top_k,
+            )
+        else:
+            parser_hit = "A/N"
 
         compression_ratio = calculate_text_compression_ratio(
             original_text=reference_text,
@@ -301,15 +217,13 @@ for sample in samples:
                 "filename": document_id,
                 "top_K": top_k,
                 "expected_evidence_count": len(reference_evidence),
-                "parser_preserved_evidence_count": len(parser_project_evidence),
+                "parser_preserved_evidence_count": len(parser_evidence),
                 "reference_recall": reference_hit,
                 "parser_recall": parser_hit,
                 "parser_compression_ratio": compression_ratio,
             }
         )
 
-
-print(len(evaluation_results))
 
 results_dir = PROJECT_ROOT / "results"
 results_dir.mkdir(
