@@ -100,4 +100,7 @@ class ExpectedEvidence(BaseModel):
     supports: list[EvidenceSupport]
 
 
-
+class DatasetValidationResult(BaseModel):
+    status: bool
+    mapped_evidence: list[ExpectedEvidence]
+    reason: str | None
