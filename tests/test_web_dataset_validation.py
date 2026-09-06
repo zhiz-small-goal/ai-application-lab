@@ -51,7 +51,7 @@ def test_validate_evidence_in_reference_returns_valid_result_when_all_evidence_i
     assert check_result == expected_validate_result
 
 
-def test_validate_evidence_in_reference_returns_reason_when_evidence_not_found():
+def test_validate_evidence_in_reference_returns_invalid_result_when_evidence_not_found():
     expected_evidence_texts = [
         "nihao",
         "zhiz love",
@@ -66,7 +66,7 @@ def test_validate_evidence_in_reference_returns_reason_when_evidence_not_found()
     )
 
     assert check_result.reason == "Expected evidence not found in reference text: zhiz love"
-    
+
     assert len(check_result.mapped_evidence) == 1
     assert check_result.mapped_evidence[0].text == "nihao"
 
