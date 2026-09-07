@@ -113,6 +113,7 @@ samples = dataset["samples"]
 reranker = FlagReranker(
     "BAAI/bge-reranker-v2-m3",
     use_fp16=False,
+    devices=["cuda:0"],
 )
 
 query = dataset["query"]
