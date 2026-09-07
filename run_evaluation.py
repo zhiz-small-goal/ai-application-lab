@@ -172,7 +172,7 @@ for sample in samples:
                 "reference_validate_reason": validate_reference.reason,
 
                 "expected_evidence_count": len(expected_evidence_texts),
-                "reference_evidence_preserved_count": len(validate_reference.mapped_evidence),
+                "reference_preserved_evidence_count": len(validate_reference.mapped_evidence),
 
                 "parser_preserved_evidence_count": None,
                 "reference_recall": None,
