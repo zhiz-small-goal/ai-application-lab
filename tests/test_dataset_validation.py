@@ -221,3 +221,19 @@ def test_evaluate_parser_preservation_records_missing_supports():
 
     assert evaluate_result == expected_result
 
+
+def test_validate_evidence_in_reference_returns_invalid_when_expected_evidence_empty():
+    reference_text = "zhiz is learning AI lab. zhiz is very good!"
+    reference_evidence = []
+
+    validate_result = validate_evidence_in_reference(
+        reference_text=reference_text,
+        document_id="doc-001",
+        expected_evidence_texts=reference_evidence,
+    )
+
+    assert validate_result.status is False
+
+    assert len(validate_result.mapped_evidence) == 0
+    assert validate_result.reason == "expected evidence is empty"
+
