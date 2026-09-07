@@ -155,6 +155,34 @@ for sample in samples:
     expected_evidence_texts=expected_evidence_texts,
     )
 
+    if validate_reference.status is False:
+        compression_ratio = calculate_text_compression_ratio(
+            original_text=reference_text,
+            compressed_text=parser_text,
+        )
+
+        evaluation_results.append(
+            {
+                "sample_id": sample["sample_id"],
+                "filename": document_id,
+                "top-k": None,
+
+                "reference_status": False,
+                "reference_validate_reason": validate_reference.reason,
+
+                "expected_evidence_count": len(expected_evidence_texts),
+                "evidence_preserved_count": len(validate_reference.mapped_evidence),
+
+                "parser_preserved_evidence_count": None,
+                "reference_recall": None,
+                "parser_recall": None,
+
+                "parser_compression_ratio": compression_ratio,
+            }
+        )
+
+        continue
+
     reference_evidence = validate_reference.mapped_evidence
 
     evaluate_parser = evaluate_parser_preservation(
@@ -188,23 +216,17 @@ for sample in samples:
     )
 
     for top_k in [3, 5, 7]:
-        if reference_evidence:
-            reference_hit = calculate_evidence_recall(
-                results=reference_results,
-                expected_evidence=reference_evidence,
-                top_k=top_k,
-            )
-        else:
-            reference_hit = "A/N"
+        reference_hit = calculate_evidence_recall(
+            results=reference_results,
+            expected_evidence=reference_evidence,
+            top_k=top_k,
+        )
 
-        if parser_evidence:
-            parser_hit = calculate_evidence_recall(
-                results=parser_results,
-                expected_evidence=parser_evidence,
-                top_k=top_k,
-            )
-        else:
-            parser_hit = "A/N"
+        parser_hit = calculate_evidence_recall(
+            results=parser_results,
+            expected_evidence=parser_evidence,
+            top_k=top_k,
+        )
 
         compression_ratio = calculate_text_compression_ratio(
             original_text=reference_text,
@@ -216,8 +238,13 @@ for sample in samples:
                 "sample_id": sample["sample_id"],
                 "filename": document_id,
                 "top_K": top_k,
+
+                "reference_status": True,
+                "reference_validate_reason": validate_reference.reason,
+
                 "expected_evidence_count": len(reference_evidence),
                 "parser_preserved_evidence_count": len(parser_evidence),
+
                 "reference_recall": reference_hit,
                 "parser_recall": parser_hit,
                 "parser_compression_ratio": compression_ratio,
