@@ -165,13 +165,13 @@ for sample in samples:
             {
                 "sample_id": sample["sample_id"],
                 "filename": document_id,
-                "top-k": None,
+                "top_k": None,
 
                 "reference_status": False,
                 "reference_validate_reason": validate_reference.reason,
 
                 "expected_evidence_count": len(expected_evidence_texts),
-                "evidence_preserved_count": len(validate_reference.mapped_evidence),
+                "reference_evidence_preserved_count": len(validate_reference.mapped_evidence),
 
                 "parser_preserved_evidence_count": None,
                 "reference_recall": None,
@@ -222,11 +222,14 @@ for sample in samples:
             top_k=top_k,
         )
 
-        parser_hit = calculate_evidence_recall(
-            results=parser_results,
-            expected_evidence=parser_evidence,
-            top_k=top_k,
-        )
+        if parser_evidence:
+            parser_hit = calculate_evidence_recall(
+                results=parser_results,
+                expected_evidence=parser_evidence,
+                top_k=top_k,
+            )
+        else:
+            parser_hit = None
 
         compression_ratio = calculate_text_compression_ratio(
             original_text=reference_text,
@@ -237,16 +240,18 @@ for sample in samples:
             {
                 "sample_id": sample["sample_id"],
                 "filename": document_id,
-                "top_K": top_k,
+                "top_k": top_k,
 
                 "reference_status": True,
                 "reference_validate_reason": validate_reference.reason,
 
-                "expected_evidence_count": len(reference_evidence),
-                "parser_preserved_evidence_count": len(parser_evidence),
+                "expected_evidence_count": len(expected_evidence_texts),
+                "reference_preserved_evidence_count": len(validate_reference.mapped_evidence),
 
+                "parser_preserved_evidence_count": len(parser_evidence),
                 "reference_recall": reference_hit,
                 "parser_recall": parser_hit,
+
                 "parser_compression_ratio": compression_ratio,
             }
         )
