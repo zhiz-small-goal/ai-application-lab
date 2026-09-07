@@ -42,7 +42,7 @@ def test_validate_evidence_in_reference_returns_valid_result_when_all_evidence_i
                 ]
             )
         ],
-        reason=None
+        reason="",
     )
 
     reference_text = "enihaoiszhizma"
