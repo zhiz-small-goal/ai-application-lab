@@ -75,7 +75,7 @@ def test_validate_evidence_in_reference_returns_invalid_result_when_evidence_not
     assert len(check_result.mapped_evidence) == 1
     assert check_result.mapped_evidence[0].text == "nihao"
 
-    assert check_result.status is None
+    assert check_result.status is False
 
 
 def test_evaluate_parser_preservation_maps_all_supports_when_all_are_preserved():

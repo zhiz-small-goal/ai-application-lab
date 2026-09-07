@@ -103,7 +103,7 @@ class ExpectedEvidence(BaseModel):
 class DatasetValidationResult(BaseModel):
     status: bool
     mapped_evidence: list[ExpectedEvidence]
-    reason: str | None
+    reason: str
 
 
 class MissingEvidenceSupport(BaseModel):
