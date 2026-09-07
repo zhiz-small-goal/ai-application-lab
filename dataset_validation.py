@@ -26,7 +26,7 @@ def validate_evidence_in_reference(
 
     status = True
 
-    reason = None
+    reason = ""
 
     missing_evidence = []
 
