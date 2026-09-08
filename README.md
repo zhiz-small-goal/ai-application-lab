@@ -47,7 +47,8 @@ py -m venv .venv
 安装项目依赖：`pip install -r requirements.txt`
 
 - 项目使用 `BAAI/bge-reranker-v2-m3` 作为当前 Reranker。首次运行时，FlagEmbedding 会下载对应模型，因此需要能够访问模型下载源。
-
+- 当前 `run_evaluation.py` 将 Reranker 配置为使用 `cuda:0`, 如果你的电脑用不了 GPU, 可以删掉 `run_valuation.py` 的 116 行，会变成使用默认的 CPU。
+- 这里暂时不展开 CUDA GPU 的设备支持检查、安装教程。
 ### 5.2 Evaluation 输入
 - 主要 Evaluation 使用两类输入：
 `evaluation_samples/ Frozen HTML 样本`
