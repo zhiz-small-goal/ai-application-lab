@@ -70,33 +70,42 @@ py -m venv .venv
 - 在项目根目录执行：`python run_evaluation.py`
 - 运行流程：
 Frozen HTML
-├─-> BeautifulSoup -> Reference Text
-└─-> Trafilatura -> Parser Text
+|-> BeautifulSoup -> Reference Text
+`-> Trafilatura -> Parser Text
 
-Expected Evidence
-        ↓
-Reference Text
-        ↓
-Reference Validation + Mapping
-        ↓
+Expected Evidence + Reference Text
+-> Reference Validation + Mapping -> reference_status
+
 reference_status?
-├─ False
-│  -> Record Failure Result
-│  -> Parser Preservation = N/A
-│  -> Reference Recall = N/A
-│  -> Parser Recall = N/A
-│  -> stop current sample
-│
-└─ True
-   -> Parser Preservation
-   -> Parser Evidence
+|-> False
+|   -> Record Failure Result
+|   -> Parser Preservation not run
+|   -> Reference Recall = N/A
+|   -> Parser Recall = N/A
+|   -> Stop current sample
+`-> True
+    -> Reference Evidence
 
-   Reference Text + Reference Evidence
-   └─-> Chunking -> Reranker -> Top-K -> Reference Recall
+    Parser Text        --\
+                         +-> Parser Preservation -> Parser Evidence
+    Reference Evidence --/
 
-   Parser Text + Parser Evidence
-   └─-> Chunking -> Reranker -> Top-K -> Parser Recall
-  
+    Reference Text
+    -> Chunking
+    -> Query + Chunks
+    -> Reranker
+    -> Top-K           --\
+                         +-> Reference Recall
+    Reference Evidence --/
+
+    Parser Text
+    -> Chunking
+    -> Query + Chunks
+    -> Reranker
+    -> Top-K        --\
+                      +-> Parser Recall
+    Parser Evidence --/
+
 Reference Text + Parser Text
 -> Compression Ratio
 
