@@ -1,6 +1,8 @@
 from pathlib import Path
 import time
 
+from trafilatura import extract
+
 from httpx import Client
 
 
@@ -21,17 +23,35 @@ with Client(
         status_code = response.status_code
 
         if status_code == 200:
+            raw_html = response.text
             raw_path.parent.mkdir(
                 parents=True,
                 exist_ok=True,
             )
 
             raw_path.write_text(
-                response.text,
+                raw_html,
                 encoding="utf-8",
             )
 
             print(f"Saved: {raw_path}")
+
+            parser_input_html = (
+                "<!DOCTYPE html>"
+                "<html>"
+                "<body>"
+                f"{raw_html}"
+                "</body>"
+                "</html>"
+            )
+
+            parser_text = extract(parser_input_html)
+
+            if parser_text is None:
+                print("Parser failed")
+                break
+
+            print(parser_text[:1000])
             break
 
         elif status_code == 403:
