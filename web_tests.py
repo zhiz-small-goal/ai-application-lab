@@ -5,14 +5,10 @@ from httpx import Client
 
 url = "https://api.github.com/repos/python/cpython"
 
-with Client() as client:
-    
-    MAX_RETRIES = 3
-    retry_count = 0
+MAX_RETRIES = 3
 
-    while True:
-        if retry_count == MAX_RETRIES:
-            break
+with Client() as client:
+    for attempt in range(MAX_RETRIES + 1):
         response = client.get(url)
 
         status_code = response.status_code
@@ -21,23 +17,21 @@ with Client() as client:
             print(response.json())
             break
 
-        elif status_code == 429:
-            print("Rate Limited")
-            retry_count += 1
-            time.sleep(10)
-            continue
-
         elif status_code == 403:
             print("Forbidden")
             break
 
-        elif status_code in {500, 502, 503, 504}:
-            print("Server Error")
-            time.sleep(2)
-            retry_count += 1
-            continue
+        retryable = (
+            status_code == 429
+            or status_code in {500, 502, 503, 504}
+        )
 
-        else:
+        if not retryable:
             print("Unknown Status")
             break
 
+        if attempt == MAX_RETRIES:
+            print("Max retries reached")
+            break
+
+        time.sleep(2)
