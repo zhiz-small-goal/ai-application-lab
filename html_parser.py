@@ -22,8 +22,8 @@ def extract_text_from_html(
             "</html>"
         )
 
-    else:
-        parser_text = extract(html)
+    
+    parser_text = extract(html)
 
     if parser_text is None:
         return parser_text
