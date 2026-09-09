@@ -1,20 +1,37 @@
+from pathlib import Path
 import time
 
 from httpx import Client
 
 
-url = "https://api.github.com/repos/python/cpython"
+url = "https://api.github.com/repos/python/cpython/readme"
 
 MAX_RETRIES = 3
 
-with Client() as client:
+raw_path = Path("data/raw/cpython_readme.html")
+
+with Client(
+    headers={
+        "Accept": "application/vnd.github.html+json"
+    }
+) as client:
     for attempt in range(MAX_RETRIES + 1):
         response = client.get(url)
 
         status_code = response.status_code
 
         if status_code == 200:
-            print(response.json())
+            raw_path.parent.mkdir(
+                parents=True,
+                exist_ok=True,
+            )
+
+            raw_path.write_text(
+                response.text,
+                encoding="utf-8",
+            )
+
+            print(f"Saved: {raw_path}")
             break
 
         elif status_code == 403:
