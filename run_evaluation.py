@@ -7,9 +7,8 @@ from trafilatura import extract
 
 from FlagEmbedding import FlagReranker
 
-from evidence_mapping import project_evidence_span, normalize_text_with_position_map
 from dataset_validation import validate_evidence_in_reference, evaluate_parser_preservation
-from models import Chunk, EvidenceSupport, ExpectedEvidence
+from models import Chunk
 
 from chunking import calculate_evidence_recall, split_into_chunks
 
@@ -112,7 +111,7 @@ samples = dataset["samples"]
 
 reranker = FlagReranker(
     "BAAI/bge-reranker-v2-m3",
-    use_fp16=False,
+    use_fp16=True,
     devices=["cuda:0"],
 )
 
@@ -124,6 +123,7 @@ evaluation_results = []
 
 for sample in samples:
     sample_file = samples_dir / (sample["file_name"])
+    print("Evaluating sample: ", sample["sample_id"])
 
     sample_text = sample_file.read_text(
         encoding="utf-8"
@@ -138,6 +138,7 @@ for sample in samples:
         separator="\n",
         strip=True,
     )
+    print("Parsing...")
 
     parser_text = extract(sample_text)
 
@@ -150,6 +151,7 @@ for sample in samples:
     for evidence in evidence_list:
         expected_evidence_texts.append(evidence["text"])
 
+    print("Validating evidence...")
     validate_reference = validate_evidence_in_reference(
     reference_text=reference_text,
     document_id=document_id,
@@ -185,6 +187,7 @@ for sample in samples:
         continue
 
     reference_evidence = validate_reference.mapped_evidence
+    print("Evaluating Parser preservation...")
 
     evaluate_parser = evaluate_parser_preservation(
         reference_text=reference_text,
@@ -193,6 +196,8 @@ for sample in samples:
     )
 
     parser_evidence = evaluate_parser.mapped_evidence
+    print("\nParser missing evidence: ", evaluate_parser.missing_supports)
+    print("Chunking...")
 
     reference_chunks = split_into_chunks(
         document_id=document_id,
@@ -203,6 +208,7 @@ for sample in samples:
         document_id=document_id,
         text=parser_text,
     )
+    print("Reranking...\n")
 
     reference_results = rerank_chunks(
         chunks=reference_chunks,
@@ -257,7 +263,7 @@ for sample in samples:
             }
         )
 
-
+print("Waiting evaluation result...")
 results_dir = PROJECT_ROOT / "results"
 results_dir.mkdir(
     parents=True,
@@ -282,5 +288,5 @@ with output_path.open(
     writer.writeheader()
     writer.writerows(evaluation_results)
 
-print("\nEvaluation results csv output")
+print("\nEvaluation results saved to CSV.")
         
