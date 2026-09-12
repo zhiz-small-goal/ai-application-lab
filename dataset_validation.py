@@ -8,8 +8,6 @@ from models import (
 
 from evidence_mapping import normalize_text_with_position_map, EvidenceSpanProjector
 
-from evidence_mapping  import project_evidence_span
-
 
 def validate_evidence_in_reference(
         reference_text: str,
