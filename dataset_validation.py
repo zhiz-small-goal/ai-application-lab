@@ -6,7 +6,7 @@ from models import (
     ParserPreservationResult,
 )
 
-from evidence_mapping import normalize_text_with_position_map
+from evidence_mapping import normalize_text_with_position_map, EvidenceSpanProjector
 
 from evidence_mapping  import project_evidence_span
 
@@ -99,9 +99,20 @@ def evaluate_parser_preservation(
 ) -> ParserPreservationResult:
     """Project reference evidence supports into parser text and record preservation results."""
 
+    if not reference_evidence:
+        return ParserPreservationResult(
+            mapped_evidence=[],
+            missing_supports=[],
+        )
+
     parser_mapped_evidence = []
 
     parser_missing_supports = []
+
+    projector = EvidenceSpanProjector(
+        reference_text=reference_text,
+        parser_text=parser_text,
+    )
 
     for evidence in reference_evidence:
         parser_supports = []
@@ -113,11 +124,9 @@ def evaluate_parser_preservation(
             reference_start = support.start
             reference_end = support.end
 
-            parser_position = project_evidence_span(
-                reference_text=reference_text,
+            parser_position = projector.project(
                 reference_start=reference_start,
-                reference_end=reference_end,
-                parser_text=parser_text,
+                reference_end=reference_end
             )
 
             if parser_position is None:
@@ -154,11 +163,3 @@ def evaluate_parser_preservation(
     )
 
         
-
-
-        
-
-
-
-
-    
