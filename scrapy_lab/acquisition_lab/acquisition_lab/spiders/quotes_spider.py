@@ -9,7 +9,7 @@ class QuotesSpider(scrapy.Spider):
     async def start(self):
         urls = [
             "https://quotes.toscrape.com/page/1/",
-            "https://quotes.toscrape.com/page/1/",
+            "https://quotes.toscrape.com/pate/1/",
             "https://quotes.toscrape.com/page/2/",
         ]
 
