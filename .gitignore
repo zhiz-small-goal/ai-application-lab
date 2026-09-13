@@ -25,11 +25,13 @@ data/
 *.db
 *.sqlite
 *.sqlite3
+quotes-*.html
 
-# Python
+# Python cache
 .venv/
 __pycache__/
 .pytest_cache/
+*.py[cod]
 
 # Generated AI snapshots
 repomix-output.*
@@ -40,3 +42,6 @@ deepseek_smoke_test.py
 
 evidence_reranker_smoke.py
 results/evaluation_results.csv
+
+#Scrapy runtime data
+.scrapy/
