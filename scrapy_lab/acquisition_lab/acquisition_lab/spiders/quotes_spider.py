@@ -33,3 +33,13 @@ class QuotesSpider(scrapy.Spider):
             "Save file %s",
             filename
         )
+
+        next_page = response.css(
+            "li.next a::attr(href)"
+        ).get()
+
+        if next_page is not None:
+            yield response.follow(
+                next_page,
+                callback=self.parse,
+            )
