@@ -9,6 +9,7 @@ class QuotesSpider(scrapy.Spider):
     async def start(self):
         urls = [
             "https://quotes.toscrape.com/page/1/",
+            "https://quotes.toscrape.com/page/1/",
             "https://quotes.toscrape.com/page/2/",
         ]
 
@@ -29,6 +30,7 @@ class QuotesSpider(scrapy.Spider):
             response.body
         )
 
-        self.log(
-            f"Save file {filename}"
+        self.logger.debug(
+            "Save file %s",
+            filename
         )
