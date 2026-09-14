@@ -3,6 +3,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import scrapy
+from scrapy.linkextractors import LinkExtractor
+
+from hashlib import sha256
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -25,19 +28,29 @@ class SamplesSpider(scrapy.Spider):
                 url=sample["source_url"],
                 callback=self.parse,
                 cb_kwargs={
-                    "document_id": sample["document_id"],
+                    "base_document_id": sample["document_id"],
                     "source_url": sample["source_url"],
+                    "follow_selector": sample["follow_selector"],
                 },
             )
 
     def parse(
             self,
             response,
-            document_id: str,
+            base_document_id: str,
             source_url: str,
+            follow_selector: str | None,
     ):
         FROZEN_HTML_DIR.mkdir(exist_ok=True)
         PROVENANCE_DIR.mkdir(exist_ok=True)
+
+        url_hash = sha256(
+            response.url.encode("utf-8")
+        ).hexdigest()[:12]
+
+        document_id = (
+            f"{base_document_id}_p{url_hash}"
+        )
 
         html_path = FROZEN_HTML_DIR / f"{document_id}.html"
         html_path.write_bytes(response.body)
@@ -65,7 +78,31 @@ class SamplesSpider(scrapy.Spider):
         )
 
         self.logger.info(
-            "Save sample %s from %s",
+            "\nSaved %s from %s\n",
             document_id,
             response.url,
         )
+
+        link_extractor = LinkExtractor(
+            allow_domains=["docs.python.org"],
+            allow=(r"/3/library/.*\.html$",),
+        )
+
+        links = link_extractor.extract_links(response)
+
+        self.logger.info(
+            "Found %d candidate links from %s",
+            len(links),
+            response.url,
+        )
+
+        for link in links[:10]:
+            yield response.follow(
+                link,
+                callback=self.parse,
+                cb_kwargs={
+                    "base_document_id": document_id,
+                    "source_url": source_url,
+                    "follow_selector": follow_selector,
+                },
+            )
