@@ -13,7 +13,7 @@ def extract_text_from_html(
     )
 
     if soup.html is None:
-        parser_text = extract(
+        html = (
             "<!DOCTYPE html>"
             "<html>"
             "<body>"
@@ -21,13 +21,12 @@ def extract_text_from_html(
             "</body>"
             "</html>"
         )
-
     
     parser_text = extract(html)
 
     if parser_text is None:
-        return parser_text
+        return None
 
-    return None
+    return parser_text
 
         
