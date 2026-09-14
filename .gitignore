@@ -26,6 +26,8 @@ data/
 *.sqlite
 *.sqlite3
 quotes-*.html
+frozen_html/
+provenance/
 
 # Python cache
 .venv/
@@ -45,3 +47,4 @@ results/evaluation_results.csv
 
 #Scrapy runtime data
 .scrapy/
+scrapy_lab/acquisition_lab/sample_sources.json
