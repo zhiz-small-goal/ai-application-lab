@@ -31,7 +31,7 @@ class SamplesSpider(scrapy.Spider):
                     "base_document_id": sample["document_id"],
                     "source_url": sample["source_url"],
                     "follow_selector": sample["follow_selector"],
-                    "discovered_from_rul": None,
+                    "discovered_from_url": None,
                 },
             )
 

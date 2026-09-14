@@ -87,4 +87,5 @@ REMOTE_CONTROL_ENABLED = False
 # Set settings whose default value is deprecated to a future-proof value
 FEED_EXPORT_ENCODING = "utf-8"
 
-DEPTH_LIMIT = 8
+DEPTH_LIMIT = 8 # 限制抓取深度
+# CLOSESPIDER_PAGECOUNT = 30 # 限制总爬取数量
