@@ -31,6 +31,7 @@ class SamplesSpider(scrapy.Spider):
                     "base_document_id": sample["document_id"],
                     "source_url": sample["source_url"],
                     "follow_selector": sample["follow_selector"],
+                    "discovered_from_rul": None,
                 },
             )
 
@@ -40,6 +41,7 @@ class SamplesSpider(scrapy.Spider):
             base_document_id: str,
             source_url: str,
             follow_selector: str | None,
+            discovered_from_url: str | None,
     ):
         FROZEN_HTML_DIR.mkdir(exist_ok=True)
         PROVENANCE_DIR.mkdir(exist_ok=True)
@@ -59,8 +61,10 @@ class SamplesSpider(scrapy.Spider):
             "document_id": document_id,
             "source_url": source_url,
             "response_url": response.url,
-            "fecched_at": datetime.now(timezone.utc).isoformat(),
+            "discovered_from_url": discovered_from_url,
+            "fetched_at": datetime.now(timezone.utc).isoformat(),
             "status_code": response.status,
+            "crawl_depth": response.meta.get("depth", 0),
             "content_type": response.headers.get(
                 "Content-Type",
                 b"",
@@ -104,5 +108,6 @@ class SamplesSpider(scrapy.Spider):
                     "base_document_id": document_id,
                     "source_url": source_url,
                     "follow_selector": follow_selector,
+                    "discovered_from_url": response.url,
                 },
             )
