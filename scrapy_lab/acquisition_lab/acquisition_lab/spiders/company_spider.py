@@ -36,6 +36,9 @@ DENY_URL_PATTERNS = (
     # Common CMS administration
     r"/wp-admin(?:/|$)",
     r"/wp-login\.php(?:$|\?)",
+
+    # Explicit PDF export
+    r"[?&]asPDF=1(?:&|$)",
 )
 
 class CompanySpider(scrapy.Spider):
@@ -78,6 +81,7 @@ class CompanySpider(scrapy.Spider):
                 type(response).__name__,
                 content_type,
             )
+            return
 
         FROZEN_HTML_DIR.mkdir(exist_ok=True)
         PROVENANCE_DIR.mkdir(exist_ok=True)
