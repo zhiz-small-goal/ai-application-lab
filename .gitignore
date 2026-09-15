@@ -26,8 +26,8 @@ data/
 *.sqlite
 *.sqlite3
 quotes-*.html
-frozen_html/
-provenance/
+*frozen_html/
+*provenance/
 
 # Python cache
 .venv/

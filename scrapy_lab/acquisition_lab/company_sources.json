@@ -1,0 +1,72 @@
+[
+  {
+    "company_name": "IBM",
+    "source_url": "https://www.ibm.com/us-en",
+    "allowed_domains": [
+      "ibm.com"
+    ]
+  },
+  {
+    "company_name": "Siemens",
+    "source_url": "https://www.siemens.com/en-us/",
+    "allowed_domains": [
+      "siemens.com"
+    ]
+  },
+  {
+    "company_name": "Bosch",
+    "source_url": "https://www.bosch.com/",
+    "allowed_domains": [
+      "bosch.com"
+    ]
+  },
+  {
+    "company_name": "Honeywell",
+    "source_url": "https://www.honeywell.com/us/en",
+    "allowed_domains": [
+      "honeywell.com"
+    ]
+  },
+  {
+    "company_name": "Schneider Electric",
+    "source_url": "https://www.se.com/ww/en/",
+    "allowed_domains": [
+      "se.com"
+    ]
+  },
+  {
+    "company_name": "Caterpillar",
+    "source_url": "https://www.caterpillar.com/",
+    "allowed_domains": [
+      "caterpillar.com"
+    ]
+  },
+  {
+    "company_name": "GE Vernova",
+    "source_url": "https://www.gevernova.com/",
+    "allowed_domains": [
+      "gevernova.com"
+    ]
+  },
+  {
+    "company_name": "Pfizer",
+    "source_url": "https://www.pfizer.com/",
+    "allowed_domains": [
+      "pfizer.com"
+    ]
+  },
+  {
+    "company_name": "Airbus",
+    "source_url": "https://www.airbus.com/en",
+    "allowed_domains": [
+      "airbus.com"
+    ]
+  },
+  {
+    "company_name": "Volvo",
+    "source_url": "https://www.volvo.com/en/",
+    "allowed_domains": [
+      "volvo.com"
+    ]
+  }
+]

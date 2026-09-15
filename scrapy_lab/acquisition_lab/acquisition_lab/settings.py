@@ -89,4 +89,4 @@ FEED_EXPORT_ENCODING = "utf-8"
 
 DEPTH_LIMIT = 8 # 限制抓取深度
 # CLOSESPIDER_PAGECOUNT = 30 # 限制总爬取数量
-DEPTH_STATS_VERBOSE = True # 打开后会收集每个 depth 的 Request 数量
+DEPTH_STATS_VERBOSE = True # 打开后会收集每个 depth 的 Request 数量，在输出 stats 中显示
