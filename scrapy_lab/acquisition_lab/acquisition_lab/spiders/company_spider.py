@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 import scrapy
 from scrapy.linkextractors import LinkExtractor
+from scrapy.http import HtmlResponse
 
 import json
 from pathlib import Path
@@ -65,6 +66,19 @@ class CompanySpider(scrapy.Spider):
             allowed_domains,
             discovered_from_url,
     ):
+        content_type = response.headers.get(
+            "Content-Type",
+            b"",
+        ).decode("latin-1")
+
+        if not isinstance(response, HtmlResponse):
+            self.logger.info(
+                "\n\nSkip non-HTML response: url=%s type=%s content_type=%s",
+                response.url,
+                type(response).__name__,
+                content_type,
+            )
+
         FROZEN_HTML_DIR.mkdir(exist_ok=True)
         PROVENANCE_DIR.mkdir(exist_ok=True)
 
@@ -88,10 +102,7 @@ class CompanySpider(scrapy.Spider):
             "fetched_at": datetime.now(timezone.utc).isoformat(),
             "status_code": response.status,
             "crawl_depth": response.meta.get("depth", 0),
-            "content_type": response.headers.get(
-                "content-Type",
-                b"",
-            ).decode("latin-1"),
+            "content_type": content_type,
         }
 
         provenance_path = PROVENANCE_DIR / f"{document_id}.json"
@@ -118,7 +129,7 @@ class CompanySpider(scrapy.Spider):
         links = link_extractor.extract_links(response)
 
         self.logger.info(
-            "Found %s candidate links from %s\n",
+            "\nFound %s candidate links from %s",
             len(links),
             response.url,
         )
