@@ -14,7 +14,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 SOURCE_PATH = PROJECT_ROOT / "company_sources.json"
 FROZEN_HTML_DIR = PROJECT_ROOT / "company_frozen_html"
-PROVENANCE_DIR = PROJECT_ROOT / "comapny_provenance"
+PROVENANCE_DIR = PROJECT_ROOT / "company_provenance"
 
 
 DENY_URL_PATTERNS = (
