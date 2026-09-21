@@ -54,7 +54,7 @@ airbus_url_path.write_text(
 # 获取 discover_from_url 匹配 response_url，表示重定向多少次
 transition_counts = {}
 
-airbus_provenance_dir = Path("comapny_provenance")
+airbus_provenance_dir = Path("company_provenance")
 for provenance_path in airbus_provenance_dir.iterdir():
     if "Airbus" not in provenance_path.name:
         continue
